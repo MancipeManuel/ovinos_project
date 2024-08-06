@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Ovinos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Bienvenido a la Gestión de Ovinos</h1>
+    <a href="{{ url_for('registrar_oveja') }}">Registrar Nueva Oveja</a>
+    <a href="{{ url_for('listar_ovejas') }}">Ver ovejas</a>
+    <h2>Lista de Ovejas</h2>
+    <ul>
+        {% for oveja in ovejas %}
+        <li><a href="{{ url_for('ver_oveja', id=oveja.id) }}">{{ oveja.nombre }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

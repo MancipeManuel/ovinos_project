@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Oveja</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Registrar Nueva Oveja</h1>
+    <form method="POST" action="{{ url_for('registrar_oveja') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.nombre.label }}<br>
+            {{ form.nombre(size=32) }}<br>
+            {% for error in form.nombre.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.fecha_nacimiento.label }}<br>
+            {{ form.fecha_nacimiento() }}<br>
+            {% for error in form.fecha_nacimiento.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.raza.label }}<br>
+            {{ form.raza(size=32) }}<br>
+            {% for error in form.raza.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.sexo.label }}<br>
+            {{ form.sexo() }}<br>
+            {% for error in form.sexo.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.id_padre.label }}<br>
+            {{ form.id_padre() }}<br>
+            {% for error in form.id_padre.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.id_madre.label }}<br>
+            {{ form.id_madre() }}<br>
+            {% for error in form.id_madre.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>

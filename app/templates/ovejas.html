@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Ovejas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Listado de Ovejas</h1>
+    <a href="{{ url_for('registrar_oveja') }}">Registrar nueva oveja</a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Raza</th>
+                <th>Sexo</th>
+                <th>ID Padre</th>
+                <th>ID Madre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for oveja in ovejas %}
+            <tr>
+                <td>{{ oveja.id }}</td>
+                <td>{{ oveja.nombre }}</td>
+                <td>{{ oveja.fecha_nacimiento.strftime('%Y-%m-%d') }}</td>
+                <td>{{ oveja.raza }}</td>
+                <td>{{ oveja.sexo }}</td>
+                <td>{{ oveja.id_padre }}</td>
+                <td>{{ oveja.id_madre }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
