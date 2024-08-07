@@ -11,7 +11,7 @@ from app.models import Oveja
 @app.route('/ovejas')
 def listar_ovejas():
     ovejas = Oveja.query.all()  # Obtiene todas las ovejas de la base de datos
-    return render_template('ovejas.html',ovejas=ovejas)
+    return render_template('listar_ovejas.html',ovejas=ovejas)
 
 @app.route('/')
 def index():
