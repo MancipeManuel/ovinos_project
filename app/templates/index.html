@@ -9,6 +9,10 @@
     <h1>Bienvenido a la Gestión de Ovinos</h1>
     <a href="{{ url_for('registrar_oveja') }}">Registrar Nueva Oveja</a>
     <a href="{{ url_for('listar_ovejas') }}">Ver ovejas</a>
+    <a href="{{ url_for('registrar_salud') }}">registrar salud</a>
+    <a href="{{ url_for('listar_salud') }}">ver salud</a>
+    
+
     <h2>Lista de Ovejas</h2>
     <ul>
         {% for oveja in ovejas %}

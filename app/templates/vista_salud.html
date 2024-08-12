@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>control de Salud</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>control de Salud</h1>
+    <a href="{{ url_for('listar_ovejas') }}">Volver a la lista de ovejas</a> <!-- Cambiado a la lista de ovejas -->
+    <a href="{{ url_for('registrar_salud') }}">Registrar nueva salud</a> <!-- Enlace para registrar nueva salud -->
+
+    <table border="2">
+        <thead>
+            <tr>
+                <th>ID de la salud</th>
+                <th>ID del animal</th>
+                <th>Fecha de la consulta</th>
+                <th>Tipo de consulta</th>
+                <th>Detalles de la consulta</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for salud in salud %}
+            <tr>
+                <td>{{ salud.id }}</td>
+                <td>{{ salud.id_oveja }}</td>
+                <td>{{ salud.fecha }}</td>
+                <td>{{ salud.tipo_tratamiento }}</td>
+                <td>{{ salud.detalle }}</td>
+                <td>
+                    <form action="{{ url_for('eliminar_salud', id=salud.id) }}" method="post" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta entrada de salud?');">Eliminar</button>
+                    </form>
+                    <button> <a href="{{ url_for('editar_salud', id=salud.id) }}" class="btn btn-primary">Editar<a></button>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

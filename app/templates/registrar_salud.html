@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar tratamiento</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Registrar Nuevo control <br> de salud</h1>
+    <form method="POST" action="{{ url_for('registrar_salud') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.id_oveja.label }}<br>
+            {{ form.id_oveja() }}<br>
+            {% for error in form.id_oveja.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.fecha.date }}<br>
+            {{ form.fecha() }}<br>
+            {% for error in form.fecha.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.tipo_tratamiento.label }}<br>
+            {{ form.tipo_tratamiento(size = 32) }}<br>
+            {% for error in form.tipo_tratamiento.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.detalle.label }}<br>
+            {{ form.detalle(size=32) }}<br>
+            {% for error in form.detalle.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>

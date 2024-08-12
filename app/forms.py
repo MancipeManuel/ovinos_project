@@ -10,3 +10,14 @@ class OvejaForm(FlaskForm):
     id_padre = IntegerField('ID Padre', validators=[Optional()])
     id_madre = IntegerField('ID Madre', validators=[Optional()])
     submit = SubmitField('Registrar Oveja')
+    
+    
+class saludForm(FlaskForm):
+    id_oveja = IntegerField('id_oveja', validators=[DataRequired()])
+    fecha = DateField('fecha de inicio del tratamiento ', validators=[DataRequired()])
+    tipo_tratamiento = StringField('tipo_tratamiento',validators= [DataRequired()])
+    detalle = StringField('detalle del tratamiento ', validators=[Optional()])
+    submit = SubmitField('Registrar tratamiento')
+     
+   
+    
