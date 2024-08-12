@@ -48,7 +48,7 @@ def registrar_salud():
         db.session.add(nuevo_registro)
         db.session.commit()
         flash(' registrado exitosamente!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('index.html'))
     return render_template('registrar_salud.html', form=form)
 
 
