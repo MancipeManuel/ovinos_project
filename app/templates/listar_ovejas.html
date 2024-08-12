@@ -31,6 +31,12 @@
                 <td>{{ oveja.sexo }}</td>
                 <td>{{ oveja.id_padre }}</td>
                 <td>{{ oveja.id_madre }}</td>
+                <td>
+                    <a href="{{ url_for('editar_oveja', id=oveja.id) }}">Editar</a>
+                    <form action="{{ url_for('eliminar_oveja', id=oveja.id) }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta oveja?');">Eliminar</button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
