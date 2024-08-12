@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Ovejas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Listado de Ovejas</h1>
+    <a href="{{ url_for('registrar_reproduccion') }}">Registrar reproducción</a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Oveja</th>
+                <th>Fecha Apareamiento</th>
+                <th>ID Macho</th>
+                <th>Fecha Parto</th>
+                <th>Número de Crías</th>
+                <th>Acciones</th> <!-- Nueva columna para las acciones -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for reproduccion in reproducciones %}
+            <tr>
+                <td>{{ reproduccion.id_oveja }}</td>
+                <td>{{ reproduccion.fecha_apareamiento.strftime('%Y-%m-%d') }}</td>
+                <td>{{ reproduccion.id_macho }}</td>
+                <td>{{ reproduccion.fecha_parto.strftime('%Y-%m-%d') }}</td>
+                <td>{{ reproduccion.num_crias }}</td>
+                <td>
+                    <a href="{{ url_for('editar_reproduccion', id=reproduccion.id) }}">Editar</a>
+                    <form action="{{ url_for('eliminar_reproduccion', id=reproduccion.id) }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro de reproducción?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+

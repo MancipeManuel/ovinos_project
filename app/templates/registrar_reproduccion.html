@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Reproducción</title>
+    <script>
+        // Función para calcular la fecha de parto
+        function calcularFechaParto() {
+            // Obtener la fecha de apareamiento desde el campo de entrada
+            const fechaApareamiento = document.getElementById('fecha_apareamiento').value;
+            if (fechaApareamiento) {
+                // Convertir la fecha de apareamiento en un objeto Date
+                const dateApareamiento = new Date(fechaApareamiento);
+
+                // Definir el periodo de gestación (150 días en milisegundos)
+                const periodoGestacion = 150 * 24 * 60 * 60 * 1000;
+
+                // Calcular la fecha de parto
+                const fechaParto = new Date(dateApareamiento.getTime() + periodoGestacion);
+
+                // Formatear la fecha de parto en formato YYYY-MM-DD
+                const año = fechaParto.getFullYear();
+                const mes = String(fechaParto.getMonth() + 1).padStart(2, '0'); // Meses en JavaScript son de 0 a 11
+                const día = String(fechaParto.getDate()).padStart(2, '0');
+
+                // Establecer el valor del campo de fecha de parto
+                document.getElementById('fecha_parto').value = `${año}-${mes}-${día}`;
+            } else {
+                // Limpiar el campo de fecha de parto si no hay fecha de apareamiento
+                document.getElementById('fecha_parto').value = '';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Registrar Reproducción</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.id_oveja.label }}<br>
+            {{ form.id_oveja(size=32) }}<br>
+            {% for error in form.id_oveja.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.fecha_apareamiento.label }}<br>
+            {{ form.fecha_apareamiento(size=32, id='fecha_apareamiento', oninput='calcularFechaParto()') }}<br>
+            {% for error in form.fecha_apareamiento.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.id_macho.label }}<br>
+            {{ form.id_macho(size=32) }}<br>
+            {% for error in form.id_macho.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.fecha_parto.label }}<br>
+            {{ form.fecha_parto(size=32, id='fecha_parto', readonly=true) }}<br>
+            {% for error in form.fecha_parto.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_crias.label }}<br>
+            {{ form.num_crias(size=32) }}<br>
+            {% for error in form.num_crias.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Reproducción</title>
+    <script>
+        // Función para calcular la fecha de parto
+        function calcularFechaParto() {
+            const fechaApareamiento = document.getElementById('fecha_apareamiento').value;
+            if (fechaApareamiento) {
+                const dateApareamiento = new Date(fechaApareamiento);
+                const periodoGestacion = 150 * 24 * 60 * 60 * 1000;
+                const fechaParto = new Date(dateApareamiento.getTime() + periodoGestacion);
+                const año = fechaParto.getFullYear();
+                const mes = String(fechaParto.getMonth() + 1).padStart(2, '0');
+                const día = String(fechaParto.getDate()).padStart(2, '0');
+                document.getElementById('fecha_parto').value = `${año}-${mes}-${día}`;
+            } else {
+                document.getElementById('fecha_parto').value = '';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Editar Reproducción</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.id_oveja.label }}<br>
+            {{ form.id_oveja(size=32) }}<br>
+            {% for error in form.id_oveja.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.fecha_apareamiento.label }}<br>
+            {{ form.fecha_apareamiento(size=32, id='fecha_apareamiento', oninput='calcularFechaParto()') }}<br>
+            {% for error in form.fecha_apareamiento.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.id_macho.label }}<br>
+            {{ form.id_macho(size=32) }}<br>
+            {% for error in form.id_macho.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.fecha_parto.label }}<br>
+            {{ form.fecha_parto(size=32, id='fecha_parto', readonly=true) }}<br>
+            {% for error in form.fecha_parto.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_crias.label }}<br>
+            {{ form.num_crias(size=32) }}<br>
+            {% for error in form.num_crias.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+</body>
+</html>

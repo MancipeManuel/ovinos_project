@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from app import app, db
-from app.forms import OvejaForm
-from app.models import Oveja
+from app.forms import OvejaForm,ReproduccionForm
+from app.models import Oveja,Reproduccion
 
 
 # @app.route('/ovejas')
@@ -34,3 +34,55 @@ def registrar_oveja():
         flash('Oveja registrada exitosamente!', 'success')
         return redirect(url_for('index'))
     return render_template('registro_oveja.html', form=form)
+
+@app.route('/registrar_reproduccion', methods=['GET', 'POST'])
+def registrar_reproduccion():
+    form = ReproduccionForm()
+    if form.validate_on_submit():
+        nueva_reproduccion = Reproduccion(
+            id_oveja=form.id_oveja.data,
+            fecha_apareamiento=form.fecha_apareamiento.data,
+            id_macho=form.id_macho.data if form.id_macho.data is not None else None,
+            fecha_parto=form.fecha_parto.data if form.fecha_parto.data is not None else None,
+            num_crias=form.num_crias.data if form.num_crias.data is not None else None
+        )
+        db.session.add(nueva_reproduccion)
+        db.session.commit()
+        flash('Evento de reproducción registrado exitosamente!', 'success')
+        return redirect(url_for('index'))
+    return render_template('registrar_reproduccion.html', form=form)
+
+@app.route('/listar_reproduccion')
+def listar_reproduccion():
+    reproducciones = Reproduccion.query.all()  # Renombra la variable
+    return render_template('listar_reproduccion.html', reproducciones=reproducciones)
+
+
+
+@app.route('/eliminar_reproduccion/<int:id>', methods=['POST'])
+def eliminar_reproduccion(id):
+    reproduccion = Reproduccion.query.get_or_404(id)
+    db.session.delete(reproduccion)
+    db.session.commit()
+    flash('Reproducción eliminado correctamente', 'success')
+    return redirect(url_for('listar_reproduccion'))
+
+
+
+@app.route('/editar_reproduccion/<int:id>', methods=['GET', 'POST'])
+def editar_reproduccion(id):
+    reproduccion = Reproduccion.query.get_or_404(id)
+    form = ReproduccionForm(obj=reproduccion)
+
+    if form.validate_on_submit():
+        reproduccion.id_oveja = form.id_oveja.data
+        reproduccion.fecha_apareamiento = form.fecha_apareamiento.data
+        reproduccion.id_macho = form.id_macho.data if form.id_macho.data else None
+        reproduccion.fecha_parto = form.fecha_parto.data if form.fecha_parto.data else None
+        reproduccion.num_crias = form.num_crias.data if form.num_crias.data else None
+
+        db.session.commit()
+        flash('Reproducción actualizada correctamente', 'success')
+        return redirect(url_for('listar_reproduccion'))
+
+    return render_template('editar_reproduccion.html', form=form)
