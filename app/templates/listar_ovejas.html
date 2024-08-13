@@ -9,6 +9,7 @@
 <body>
     <h1>Listado de Ovejas</h1>
     <a href="{{ url_for('registrar_oveja') }}">Registrar nueva oveja</a>
+
     <table>
         <thead>
             <tr>
@@ -35,5 +36,7 @@
             {% endfor %}
         </tbody>
     </table>
+    <a href="{{ url_for('index') }}" class="btn">Regresar al Inicio</a>
+
 </body>
 </html>
