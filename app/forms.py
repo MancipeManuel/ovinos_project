@@ -18,5 +18,10 @@ class ReproduccionForm(FlaskForm):
     fecha_parto = DateField('Fecha de Parto', format='%Y-%m-%d', validators=[], default=None)
     num_crias = IntegerField('Número de Crías', validators=[], default=None)
     submit = SubmitField('Registrar')
-
-
+    
+class saludForm(FlaskForm):
+    id_oveja = IntegerField('ID Oveja', validators=[DataRequired()])
+    fecha = DateField('Fecha del tratamiento ', format='%Y-%m-%d', validators=[DataRequired()])
+    tipo_tratamiento = StringField('Tipo Tratamiento',validators= [DataRequired()])
+    detalle = StringField('Detalle del Tratamiento ', validators=[Optional()])
+    submit = SubmitField('Registrar tratamiento')
