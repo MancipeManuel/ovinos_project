@@ -7,8 +7,20 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Listado de Ovejas</h1>
-    <a href="{{ url_for('registrar_reproduccion') }}">Registrar reproducción</a>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('listar_ovejas') }}">Ver Ovejas</a>
+        <a href="{{url_for('registrar_reproduccion')}}">Agregar reproduccion</a>
+        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+        <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
+    <h1>Listado De Reproducciones Ovejas</h1>
     <table>
         <thead>
             <tr>
@@ -29,7 +41,7 @@
                 <td>{{ reproduccion.fecha_parto.strftime('%Y-%m-%d') }}</td>
                 <td>{{ reproduccion.num_crias }}</td>
                 <td>
-                    <a href="{{ url_for('editar_reproduccion', id=reproduccion.id) }}">Editar</a>
+                    <a href="{{ url_for('editar_reproduccion', id=reproduccion.id) }}"class='btn'>Editar</a>
                     <form action="{{ url_for('eliminar_reproduccion', id=reproduccion.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro de reproducción?');">Eliminar</button>
@@ -40,7 +52,6 @@
         </tbody>
     </table>
     <div style="margin-top: 20px;">
-    <a href="{{ url_for('index') }}" class="btn">Regresar a Inicio</a>
 </div>
 </body>
 </html>

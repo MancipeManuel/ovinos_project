@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Reproducción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script>
         // Función para calcular la fecha de parto
         function calcularFechaParto() {
@@ -34,6 +35,19 @@
     </script>
 </head>
 <body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('listar_ovejas') }}">Ver Ovejas</a>
+        <a href="{{url_for('registrar_reproduccion')}}">Agregar reproduccion</a>
+        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+        <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
     <h1>Registrar Reproducción</h1>
     <form method="POST">
         {{ form.hidden_tag() }}
@@ -72,7 +86,7 @@
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>{{ form.submit() }}</p>
+        <p>{{ form.submit(class_='btn') }} </p>
         <a href="{{ url_for('listar_reproduccion') }}" class="btn">Ir a Listar Reproducción</a>
 
     </form>
