@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Venta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('listar_ovejas') }}">Ver Ovejas</a>
+        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+        <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
+        <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
+        <a href="{{url_for('registrar_salud')}}">Registrar Salud</a></li>
+        <a href="{{url_for('listar_salud')}}">Listar Salud</a></li>
+        <a href="{{url_for('registrar_alimentacion')}}">registrar alimentacion</a></li>
+        <a href="{{url_for('listar_alimentacion')}}">Listar alimentacion</a></li>
+        <a href="{{url_for('listar_venta')}}">Listar ventas</a></li>
+        <a href="{{url_for('registrar_venta')}}">registrar ventas</a></li>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
+    
+    <div class="container">
+        <h1>Editar Venta</h1>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.id_oveja.label }}<br>
+                {{ form.id_oveja() }}<br>
+                {% for error in form.id_oveja.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.fecha.label }}<br>
+                {{ form.fecha() }}<br>
+                {% for error in form.fecha.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.cantidad.label }}<br>
+                {{ form.cantidad() }}<br>
+                {% for error in form.cantidad.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.precio.label }}<br>
+                {{ form.precio() }}<br>
+                {% for error in form.precio.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.submit(class_='btn') }}
+            </p>
+        </form>
+    </div>
+</body>
+</html>

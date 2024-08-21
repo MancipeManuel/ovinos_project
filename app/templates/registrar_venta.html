@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Oveja</title>
+    <title>Registrar Venta</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -26,52 +25,41 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
-    <h1>Editar Oveja</h1>
-    <form method="POST">
+    <h1>Registrar Nueva Venta</h1>
+    <form method="POST" action="{{ url_for('registrar_venta') }}">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.nombre.label }}<br>
-            {{ form.nombre(size=32) }}<br>
-            {% for error in form.nombre.errors %}
+        <div>
+            {{ form.id_oveja.label }}<br>
+            {{ form.id_oveja() }}<br>
+            {% for error in form.id_oveja.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.fecha_nacimiento.label }}<br>
-            {{ form.fecha_nacimiento() }}<br>
-            {% for error in form.fecha_nacimiento.errors %}
+        </div>
+        <div>
+            {{ form.fecha.label }}<br>
+            {{ form.fecha() }}<br>
+            {% for error in form.fecha.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.raza.label }}<br>
-            {{ form.raza(size=32) }}<br>
-            {% for error in form.raza.errors %}
+        </div>
+        <div>
+            {{ form.cantidad.label }}<br>
+            {{ form.cantidad(size=32) }}<br>
+            {% for error in form.cantidad.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.sexo.label }}<br>
-            {{ form.sexo() }}<br>
-            {% for error in form.sexo.errors %}
+        </div>
+        <div>
+            {{ form.precio.label }}<br>
+            {{ form.precio(size=32) }}<br>
+            {% for error in form.precio.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.id_padre.label }}<br>
-            {{ form.id_padre() }}<br>
-            {% for error in form.id_padre.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.id_madre.label }}<br>
-            {{ form.id_madre() }}<br>
-            {% for error in form.id_madre.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p><input type="submit" value="Guardar Cambios" class="btn"></p>
+        </div>
+        <div>
+            {{ form.submit(class_='btn') }}
+        </div>
     </form>
+    <br>
 </body>
 </html>

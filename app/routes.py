@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from app import app, db
-from app.forms import OvejaForm,ReproduccionForm,saludForm,AlimentacionForm
-from app.models import Oveja,Reproduccion,Salud,Alimentacion
+from app.forms import OvejaForm,ReproduccionForm,saludForm,AlimentacionForm,VentaForm
+from app.models import Oveja,Reproduccion,Salud,Alimentacion,Venta
 
 @app.route('/listar_ovejas')
 def listar_ovejas():
@@ -188,3 +188,43 @@ def eliminar_alimentacion(id):
     db.session.delete(alimentacion)
     db.session.commit()
     return redirect(url_for('listar_alimentacion'))
+
+@app.route('/registrar_venta', methods=['GET', 'POST'])
+def registrar_venta():
+    form = VentaForm()
+    if form.validate_on_submit():
+        nueva_venta = Venta(
+            id_oveja=form.id_oveja.data,
+            fecha=form.fecha.data,
+            cantidad=form.cantidad.data,
+            precio=form.precio.data
+        )
+        db.session.add(nueva_venta)
+        db.session.commit()
+        return redirect(url_for('listar_venta'))
+    return render_template('registrar_venta.html', form=form)
+
+@app.route('/listar_venta')
+def listar_venta():
+    ventas = Venta.query.all()
+    return render_template('listar_ventas.html', ventas=ventas)
+
+@app.route('/editar_venta/<int:id>', methods=['GET', 'POST'])
+def editar_venta(id):
+    venta = Venta.query.get_or_404(id)
+    form = VentaForm(obj=venta)
+    if form.validate_on_submit():
+        venta.id_oveja = form.id_oveja.data
+        venta.fecha = form.fecha.data
+        venta.cantidad = form.cantidad.data
+        venta.precio = form.precio.data
+        db.session.commit()
+        return redirect(url_for('listar_venta'))
+    return render_template('editar_venta.html', form=form)
+
+@app.route('/eliminar_venta/<int:id>', methods=['POST'])
+def eliminar_venta(id):
+    venta = Venta.query.get_or_404(id)
+    db.session.delete(venta)
+    db.session.commit()
+    return redirect(url_for('listar_venta'))
