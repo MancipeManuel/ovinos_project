@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Compra</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('listar_ovejas') }}">Ver Ovejas</a>
+        <a href="{{ url_for('registrar_reproduccion') }}">Agregar Reproducción</a>
+        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+        <a href="{{ url_for('listar_reproduccion') }}">Listar Reproducción</a>
+        <a href="{{ url_for('registrar_salud') }}">Registrar Salud</a>
+        <a href="{{ url_for('listar_salud') }}">Listar Salud</a>
+        <a href="{{ url_for('listar_compras') }}">ver compras hechas</a>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <h1>Registrar Nueva Compra</h1>
+    <form method="POST" action="{{ url_for('registrar_compra') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.tipo_producto.label }}<br>
+            {{ form.tipo_producto(size=32) }}<br>
+            {% for error in form.tipo_producto.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}            
+        </div>
+
+        <div>
+            {{ form.descripcion.label }}<br>
+            {{ form.descripcion() }}<br>
+            {% for error in form.descripcion.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.cantidad.label }}<br>
+            {{ form.cantidad(size=32) }}<br>
+            {% for error in form.cantidad.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.precio.label }}<br>
+            {{ form.precio() }}<br>
+            {% for error in form.precio.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.fecha.label }}<br>
+            {{ form.fecha  }}<br>
+            {% for error in form.fecha.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.submit(class_='btn') }} 
+        </div>
+    </form>
+</body>
+</html>
