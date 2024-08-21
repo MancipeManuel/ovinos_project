@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from app import app, db
-from app.forms import OvejaForm,ReproduccionForm,saludForm
-from app.models import Oveja,Reproduccion,Salud
+from app.forms import OvejaForm,ReproduccionForm,saludForm,AlimentacionForm
+from app.models import Oveja,Reproduccion,Salud,Alimentacion
 
 @app.route('/listar_ovejas')
 def listar_ovejas():
@@ -51,8 +51,6 @@ def registrar_reproduccion():
 def listar_reproduccion():
     reproducciones = Reproduccion.query.all()  # Renombra la variable
     return render_template('listar_reproduccion.html', reproducciones=reproducciones)
-
-
 
 @app.route('/eliminar_reproduccion/<int:id>', methods=['POST'])
 def eliminar_reproduccion(id):
@@ -119,13 +117,12 @@ def registrar_salud():
         db.session.add(nuevo_registro)
         db.session.commit()
         flash(' registrado exitosamente!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('listar_salud'))
     return render_template('registrar_salud.html', form=form)
 
 @app.route('/listar_salud')
 def listar_salud():
     salud = Salud.query.all()  
-    print(salud)
     return render_template('listar_salud.html',salud = salud)
 
 @app.route('/editar_salud/<int:id>', methods=['GET', 'POST'])
@@ -144,8 +141,6 @@ def editar_salud(id):
     
     return render_template('editar_salud.html', form=form , salud= salud)
 
-
-
 @app.route('/eliminar_salud/<int:id>', methods=['POST'])
 def eliminar_salud(id):
     salud = Salud.query.get_or_404(id)
@@ -153,3 +148,43 @@ def eliminar_salud(id):
     db.session.commit()
     flash('eliminado correctamente', 'success')
     return redirect(url_for('listar_salud'))
+
+@app.route('/registrar_alimentacion', methods=['GET', 'POST'])
+def registrar_alimentacion():
+    form = AlimentacionForm()
+    if form.validate_on_submit():
+        nueva_alimentacion = Alimentacion(
+            id_oveja=form.id_oveja.data,
+            fecha=form.fecha.data,
+            tipo_alimento=form.tipo_alimento.data,
+            cantidad=form.cantidad.data
+        )
+        db.session.add(nueva_alimentacion)
+        db.session.commit()
+        return redirect(url_for('listar_alimentacion'))
+    return render_template('registrar_alimentacion.html', form=form)
+
+@app.route('/listar_alimentacion')
+def listar_alimentacion():
+    alimentaciones = Alimentacion.query.all()
+    return render_template('listar_alimentacion.html', alimentaciones=alimentaciones)
+
+@app.route('/editar_alimentacion/<int:id>', methods=['GET', 'POST'])
+def editar_alimentacion(id):
+    alimentacion = Alimentacion.query.get_or_404(id)
+    form = AlimentacionForm(obj=alimentacion)
+    if form.validate_on_submit():
+        alimentacion.id_oveja = form.id_oveja.data
+        alimentacion.fecha = form.fecha.data
+        alimentacion.tipo_alimento = form.tipo_alimento.data
+        alimentacion.cantidad = form.cantidad.data
+        db.session.commit()
+        return redirect(url_for('listar_alimentacion'))
+    return render_template('editar_alimentacion.html', form=form)
+
+@app.route('/eliminar_alimentacion/<int:id>', methods=['POST'])
+def eliminar_alimentacion(id):
+    alimentacion = Alimentacion.query.get_or_404(id)
+    db.session.delete(alimentacion)
+    db.session.commit()
+    return redirect(url_for('listar_alimentacion'))

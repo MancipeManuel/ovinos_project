@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, SelectField, IntegerField, SubmitField
+from wtforms import StringField, DateField, SelectField, IntegerField, SubmitField,FloatField
 from wtforms.validators import DataRequired, Optional
 
 class OvejaForm(FlaskForm):
@@ -25,3 +25,10 @@ class saludForm(FlaskForm):
     tipo_tratamiento = StringField('Tipo Tratamiento',validators= [DataRequired()])
     detalle = StringField('Detalle del Tratamiento ', validators=[Optional()])
     submit = SubmitField('Registrar tratamiento')
+
+class AlimentacionForm(FlaskForm):
+    id_oveja = IntegerField('ID Oveja', validators=[DataRequired()])
+    fecha = DateField('Fecha', validators=[DataRequired()])
+    tipo_alimento = StringField('Tipo de Alimento', validators=[DataRequired()])
+    cantidad = FloatField('Cantidad', validators=[DataRequired()])
+    submit = SubmitField('Guardar')

@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Ovinos</title>
+    <title>Agregar Alimentación</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -24,5 +23,15 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
+    <h1>Agregar Alimentación</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>{{ form.id_oveja.label }}<br>{{ form.id_oveja() }}</p>
+        <p>{{ form.fecha.label }}<br>{{ form.fecha() }}</p>
+        <p>{{ form.tipo_alimento.label }}<br>{{ form.tipo_alimento() }}</p>
+        <p>{{ form.cantidad.label }}<br>{{ form.cantidad() }}</p>
+        <p>{{ form.submit(class_='btn btn-primary') }}</p>
+    </form>
+    <a href="{{ url_for('listar_alimentacion') }}">Volver a la lista</a>
 </body>
 </html>

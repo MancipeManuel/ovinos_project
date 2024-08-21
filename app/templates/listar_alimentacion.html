@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Ovejas</title>
+    <title>Listar Alimentaciones</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -24,39 +22,36 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
-    <h1>Listado De Reproducciones Ovejas</h1>
+    <h1>Listar Alimentaciones</h1>
     <table>
         <thead>
             <tr>
+                <th>ID</th>
                 <th>ID Oveja</th>
-                <th>Fecha Apareamiento</th>
-                <th>ID Macho</th>
-                <th>Fecha Parto</th>
-                <th>Número de Crías</th>
-                <th>Acciones</th> <!-- Nueva columna para las acciones -->
+                <th>Fecha</th>
+                <th>Tipo de Alimento</th>
+                <th>Cantidad</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for reproduccion in reproducciones %}
+            {% for alimentacion in alimentaciones %}
             <tr>
-                <td>{{ reproduccion.id_oveja }}</td>
-                <td>{{ reproduccion.fecha_apareamiento.strftime('%Y-%m-%d') }}</td>
-                <td>{{ reproduccion.id_macho }}</td>
-                <td>{{ reproduccion.fecha_parto.strftime('%Y-%m-%d') }}</td>
-                <td>{{ reproduccion.num_crias }}</td>
+                <td>{{ alimentacion.id }}</td>
+                <td>{{ alimentacion.id_oveja }}</td>
+                <td>{{ alimentacion.fecha }}</td>
+                <td>{{ alimentacion.tipo_alimento }}</td>
+                <td>{{ alimentacion.cantidad }}</td>
                 <td>
-                    <a href="{{ url_for('editar_reproduccion', id=reproduccion.id) }}"class='btn'>Editar</a>
-                    <form action="{{ url_for('eliminar_reproduccion', id=reproduccion.id) }}" method="POST" style="display:inline;">
+                    <a href="{{ url_for('editar_alimentacion', id=alimentacion.id) }}">Editar</a>
+                    <form action="{{ url_for('eliminar_alimentacion', id=alimentacion.id) }}" method="post" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro de reproducción?');">Eliminar</button>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta entrada de alimentacion?');">Eliminar</button>
                     </form>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div style="margin-top: 20px;">
-</div>
 </body>
 </html>
-
