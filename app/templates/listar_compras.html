@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Listado de Compras</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('listar_ovejas') }}">Ver Ovejas</a>
+        <a href="{{ url_for('registrar_reproduccion') }}">Agregar Reproducción</a>
+        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+        <a href="{{ url_for('listar_reproduccion') }}">Listar Reproducción</a>
+        <a href="{{ url_for('registrar_salud') }}">Registrar Salud</a>
+        <a href="{{ url_for('listar_salud') }}">Listar Salud</a>
+        <a href="{{ url_for('registrar_compra') }}">registrar compra</a>
+        <a href="{{ url_for('listar_compras') }}">ver compras hechas</a>
+    </div>
+    <div class="container">
+        <h1>Listado De Compras Realizadas</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Compra</th>
+                    <th>Tipo Producto</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for compra in compras %}
+                    <tr>
+                        <td>{{ compra.id }}</td>
+                        <td>{{ compra.tipo_producto }}</td>
+                        <td>{{ compra.descripcion }}</td>
+                        <td>{{ compra.cantidad }}</td>
+                        <td>{{ compra.precio }}</td>
+                        <td>{{ compra.fecha.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_compra', id=compra.id) }}" class="btn">Editar</a>
+                            <form action="{{ url_for('eliminar_compra', id=compra.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?');">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
