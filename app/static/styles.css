@@ -7,12 +7,17 @@ body {
     padding: 0;
 }
 
-/* Navigation Bar */
+/* Barra de Navegación Superior */
 .navbar {
     background-color: #1c5d99;
     padding: 10px 20px;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Mantener la barra superior por encima de otros elementos */
 }
 
 .navbar a {
@@ -26,14 +31,38 @@ body {
     color: #ffcc00;
 }
 
-/* Main Content */
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
+/* Barra de Navegación Vertical */
+.sidebar {
+    height: calc(100% - 60px); /* Altura completa menos la altura de la barra superior */
+    width: 250px;
+    position: fixed;
+    top: 60px; /* Comienza justo debajo de la barra superior */
+    left: 0;
+    background-color: #1c5d99;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-x: hidden;
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #ffffff;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #3c8dbc;
+    color: #ffcc00;
+}
+
+/* Ajustar el contenido principal para que no quede oculto detrás de la barra lateral */
+.main-content {
+    margin-left: 250px;
+    margin-top: 80px; /* Ajuste para evitar la barra superior */
     padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Forms */
@@ -97,6 +126,7 @@ footer {
     bottom: 0;
     width: 100%;
 }
+
 /* Botones estilizados */
 .btn {
     display: inline-block;
@@ -114,46 +144,15 @@ footer {
     color: white;
 }
 
-/* Barra de Navegación Vertical */
-.sidebar {
-    height: 100%;
-    width: 250px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #1c5d99;
-    padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    overflow-x: hidden;
+/* Charts */
+.chart-container {
+    position: relative;
+    width: 90%;
+    max-width: 500px; /* Ajusta el ancho máximo según sea necesario */
+    margin: 20px auto;
 }
 
-.sidebar a {
-    padding: 15px 25px;
-    text-decoration: none;
-    font-size: 18px;
-    color: #ffffff;
-    display: block;
-    transition: 0.3s;
+canvas {
+    width: 100% !important; /* Asegura que el canvas ocupe todo el ancho del contenedor */
+    height: auto !important; /* Ajusta la altura proporcionalmente */
 }
-
-.sidebar a:hover {
-    background-color: #3c8dbc;
-    color: #ffcc00;
-}
-
-/* Ajustar el contenido principal para que no quede oculto detrás de la barra lateral */
-.main-content {
-    margin-left: 250px;
-    padding: 20px;
-}
-
-/* Ajustes adicionales para el diseño */
-.navbar {
-    margin-left: 250px; /* Asegura que la barra de navegación superior no se superponga con la barra lateral */
-}
-
-/* Resto del contenido */
-.container {
-    margin-left: 270px; /* Ajusta el margen izquierdo para evitar la barra lateral */
-}
-
