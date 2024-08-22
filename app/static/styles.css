@@ -5,6 +5,7 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
+    padding-top: 20px; /* Ajusta el padding para desplazar el contenido hacia abajo */
 }
 
 /* Barra de Navegación Superior */
@@ -33,16 +34,16 @@ body {
 
 /* Barra de Navegación Vertical */
 .sidebar {
-    height: calc(100% - 60px); /* Altura completa menos la altura de la barra superior */
+    height: calc(100vh - 35px); /* Altura completa menos la altura de la barra superior */
     width: 250px;
     position: fixed;
-    top: 60px; /* Comienza justo debajo de la barra superior */
-    left: 0;
+    top: 35px; /* Comienza justo debajo de la barra superior */
+    right: 0;
     background-color: #1c5d99;
     padding-top: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Permitir desplazamiento si el contenido es demasiado grande */
-    z-index: 500; /* Asegurar que esté por encima del contenido principal */
+    overflow-y: auto; /* Permitir desplazamiento vertical */
+    z-index: 900;
 }
 
 .sidebar a {
@@ -61,12 +62,9 @@ body {
 
 /* Ajustar el contenido principal para que no quede oculto detrás de la barra lateral */
 .main-content {
-    margin-left: 250px; /* Espacio reservado para la barra lateral */
-    margin-top: 80px; /* Ajuste para evitar la barra superior */
+    margin-left: 250px; /* Desplazar contenido para dejar espacio para la barra lateral */
+    margin-top: 60px; /* Ajuste para evitar la barra superior */
     padding: 20px;
-    min-height: 100vh; /* Asegurar que el contenido principal tenga al menos la altura de la ventana */
-    background-color: #ffffff; /* Fondo blanco para el contenido principal */
-    z-index: 400; /* Asegurar que esté por debajo de la barra lateral */
 }
 
 /* Forms */
@@ -100,9 +98,10 @@ button:hover {
 
 /* Tables */
 table {
-    width: 100%;
+    width: calc(100% - 250px); /* Ajustar el ancho para dejar espacio para la barra lateral */
+    margin-right: 250px; /* Desplazar la tabla para que empiece al lado de la barra lateral */
     border-collapse: collapse;
-    margin: 20px 0;
+    margin: 20px 0; /* Ajuste de margen superior e inferior */
 }
 
 th, td {
@@ -128,7 +127,9 @@ footer {
     padding: 10px;
     position: fixed;
     bottom: 0;
-    width: 100%;
+    width: calc(100%); 
+    right: 0;
+    z-index: 850; /* Debe estar por debajo de la barra lateral, pero por encima del contenido principal */
 }
 
 /* Botones estilizados */
@@ -152,11 +153,11 @@ footer {
 .chart-container {
     position: relative;
     width: 90%;
-    max-width: 500px; /* Ajusta el ancho máximo según sea necesario */
+    max-width: 500px;
     margin: 20px auto;
 }
 
 canvas {
-    width: 100% !important; /* Asegura que el canvas ocupe todo el ancho del contenedor */
-    height: auto !important; /* Ajusta la altura proporcionalmente */
+    width: 100% !important;
+    height: auto !important;
 }
