@@ -8,19 +8,13 @@
 <body>
     <div class="navbar">
         <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('listar_ovejas') }}">listar Ovejas</a>
-        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
-        <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
-        <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
-        <a href="{{url_for('registrar_salud')}}">Registrar Salud</a></li>
-        <a href="{{url_for('listar_salud')}}">Listar Salud</a></li>
-        <a href="{{url_for('registrar_alimentacion')}}">registrar alimentacion</a></li>
-        <a href="{{url_for('listar_alimentacion')}}">Listar alimentacion</a></li>
-        <a href="{{url_for('listar_venta')}}">Listar ventas</a></li>
-        <a href="{{url_for('registrar_venta')}}">registrar ventas</a></li>
-        <a href="{{url_for('registrar_compra')}}">registrar compras</a></li>
-        <a href="{{url_for('listar_compra')}}">listar compras</a></li>
-        <a href="{{url_for('listar_finanzas')}}">listar finanzas</a></li>
+        <a href="{{ url_for('index1') }}"> ovejas  </a>
+        <a href="{{ url_for('index2') }}">salud</a>
+        <a href="{{url_for('index3')}}"> reproduccion</a>
+        <a href="{{url_for('index4')}}">alimentacion</a></li>
+        <a href="{{url_for('index6')}}">finanzas</a></li>
+        <a href="{{url_for('index7')}}">ventas</a></li>
+        <a href="{{url_for('index8')}}">compras</a></li>
     </div>
     <div class="container">
         {% block content %}{% endblock %}
@@ -28,6 +22,10 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
+    <div class="sidebar">
+
+    <a href="{{url_for('registrar_alimentacion')}}">registrar alimentacion</a></li>
+    <a href="{{url_for('listar_alimentacion')}}">Listar alimentacion</a></li>
     <h1>Editar Alimentación</h1>
     <form method="POST">
         {{ form.hidden_tag() }}
