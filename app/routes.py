@@ -29,7 +29,7 @@ def registrar_oveja():
         db.session.commit()
         flash('Oveja registrada exitosamente!', 'success')
         return redirect(url_for('listar_ovejas'))
-    return render_template('registrar_oveja.html', form=form)
+    return render_template('registro_oveja.html', form=form)
 
 @app.route('/editar_oveja/<int:id>', methods=['GET', 'POST'])
 def editar_oveja(id):
@@ -347,10 +347,4 @@ def index7():
 def index8():
     return render_template('index8.html')
 
-
-    informe = db.session.query(
-        func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
-        func.sum(Finanzas.monto).label('total')
-    ).group_by('mes').all()
-    return render_template('informe_mensual.html', informe=informe)
 
