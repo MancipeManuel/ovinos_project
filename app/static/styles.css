@@ -155,4 +155,8 @@ footer {
 canvas {
     width: 100% !important; /* Asegura que el canvas ocupe todo el ancho del contenedor */
     height: auto !important; /* Ajusta la altura proporcionalmente */
+
 }
+
+
+

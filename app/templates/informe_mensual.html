@@ -3,39 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <title>Informe Mensual</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1c5d99;
+        }
+
+        h2 {
+            color: #1c5d99;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 90%;
+            max-width: 600px; /* Ajusta el ancho máximo según sea necesario */
+            margin: 20px auto;
+        }
+
+        canvas {
+            width: 100% !important; /* Asegura que el canvas ocupe todo el ancho del contenedor */
+            height: auto !important; /* Ajusta la altura proporcionalmente */
+        }
+
+        a {
+            color: #1c5d99;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        a:hover {
+            color: #ffcc00;
+        }
+    </style>
 </head>
 <body>
-    <h1>Informe Mensual</h1>
-    
-    <h2>Ventas por Mes</h2>
-    <table border="1">
-        <tr>
-            <th>Mes</th>
-            <th>Total Ventas</th>
-        </tr>
-        {% for venta in ventas_por_mes %}
-        <tr>
-            <td>{{ venta.mes }}</td>
-            <td>${{ venta.total_ventas }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    
-    <h2>Compras por Mes</h2>
-    <table border="1">
-        <tr>
-            <th>Mes</th>
-            <th>Total Compras</th>
-        </tr>
-        {% for compra in compras_por_mes %}
-        <tr>
-            <td>{{ compra.mes }}</td>
-            <td>${{ compra.total_compras }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    
-    <a href="{{ url_for('listar_finanzas') }}">Volver a Listar Finanzas</a>
-    <a href="{{ url_for('analisis_financiero') }}">Ir al Análisis Financiero</a>
+    <div class="container">
+        <h1>Informe Mensual</h1>
+        
+        <h2>Ventas por Mes</h2>
+        <div class="chart-container">
+            <canvas id="ventasMensualesChart"></canvas>
+        </div>
+        
+        <h2>Compras por Mes</h2>
+        <div class="chart-container">
+            <canvas id="comprasMensualesChart"></canvas>
+        </div>
+
+        <script>
+            // Preparar datos para el gráfico de ventas mensuales
+            const ventasLabels = [
+                {% for venta in ventas_por_mes %}
+                    '{{ venta.mes }}',
+                {% endfor %}
+            ];
+            const ventasData = [
+                {% for venta in ventas_por_mes %}
+                    {{ venta.total_ventas }},
+                {% endfor %}
+            ];
+            
+            // Preparar datos para el gráfico de compras mensuales
+            const comprasLabels = [
+                {% for compra in compras_por_mes %}
+                    '{{ compra.mes }}',
+                {% endfor %}
+            ];
+            const comprasData = [
+                {% for compra in compras_por_mes %}
+                    {{ compra.total_compras }},
+                {% endfor %}
+            ];
+
+            // Crear gráfico de ventas mensuales
+            const ventasCtx = document.getElementById('ventasMensualesChart').getContext('2d');
+            const ventasMensualesChart = new Chart(ventasCtx, {
+                type: 'line',
+                data: {
+                    labels: ventasLabels,
+                    datasets: [{
+                        label: 'Total Ventas',
+                        data: ventasData,
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value; // Añade símbolo de peso a las etiquetas del eje Y
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Crear gráfico de compras mensuales
+            const comprasCtx = document.getElementById('comprasMensualesChart').getContext('2d');
+            const comprasMensualesChart = new Chart(comprasCtx, {
+                type: 'line',
+                data: {
+                    labels: comprasLabels,
+                    datasets: [{
+                        label: 'Total Compras',
+                        data: comprasData,
+                        borderColor: '#F44336',
+                        backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value; // Añade símbolo de peso a las etiquetas del eje Y
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
 </body>
 </html>

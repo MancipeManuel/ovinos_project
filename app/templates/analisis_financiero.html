@@ -3,14 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Análisis Financiero</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Ajusta el ancho máximo según sea necesario */
+            margin: 20px auto;
+        }
+
+        canvas {
+            width: 100% !important; /* Asegura que el canvas ocupe todo el ancho del contenedor */
+            height: auto !important; /* Ajusta la altura proporcionalmente */
+        }
+    </style>
 </head>
 <body>
-    <h1>Análisis Financiero</h1>
-    <p>Total Ventas: ${{ total_ventas }}</p>
-    <p>Total Compras: ${{ total_compras }}</p>
-    <p>Saldo Total: ${{ saldo_total }}</p>
-    
-    <a href="{{ url_for('listar_finanzas') }}">Volver a Listar Finanzas</a>
-    <a href="{{ url_for('informe_mensual') }}">Ir al Informe Mensual</a>
+    <div class="container">
+        <h1>Análisis Financiero</h1>
+        <p>Total Ventas: ${{ total_ventas }}</p>
+        <p>Total Compras: ${{ total_compras }}</p>
+        <p>Saldo Total: ${{ saldo_total }}</p>
+        
+        <!-- Gráfico de Análisis Financiero -->
+        <div class="chart-container">
+            <canvas id="analisisFinancieroChart"></canvas>
+        </div>
+
+        <script>
+            const ctx = document.getElementById('analisisFinancieroChart').getContext('2d');
+            const analisisFinancieroChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ventas', 'Compras', 'Saldo Total'],
+                    datasets: [{
+                        label: 'Monto en $',
+                        data: [{{total_ventas}}, {{total_compras}}, {{saldo_total}}],
+                        backgroundColor: ['#4CAF50', '#F44336', '#FFC107'],
+                        borderColor: ['#4CAF50', '#F44336', '#FFC107'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value; // Añade símbolo de dólar a las etiquetas del eje Y
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
 </body>
 </html>
