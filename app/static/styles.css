@@ -113,3 +113,16 @@ footer {
     background-color: #3c8dbc;
     color: white;
 }
+
+/* Charts */
+.chart-container {
+    position: relative;
+    width: 90%;
+    max-width: 500px; /* Ajusta el ancho máximo según sea necesario */
+    margin: 20px auto;
+}
+
+canvas {
+    width: 100% !important; /* Asegura que el canvas ocupe todo el ancho del contenedor */
+    height: auto !important; /* Ajusta la altura proporcionalmente */
+}

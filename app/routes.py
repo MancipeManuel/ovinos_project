@@ -1,16 +1,17 @@
 from flask import render_template, redirect, url_for, flash
 from app import app, db
-from app.forms import OvejaForm,ReproduccionForm,saludForm,AlimentacionForm,VentaForm,CompraForm
-from app.models import Oveja,Reproduccion,Salud,Alimentacion,Venta,Compra,Finanzas
-
-@app.route('/listar_ovejas')
-def listar_ovejas():
-    ovejas = Oveja.query.all()  # Obtiene todas las ovejas de la base de datos
-    return render_template('listar_ovejas.html',ovejas=ovejas)
+from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm
+from app.models import Oveja, Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas
+from sqlalchemy import func
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/listar_ovejas')
+def listar_ovejas():
+    ovejas = Oveja.query.all()
+    return render_template('listar_ovejas.html', ovejas=ovejas)
 
 @app.route('/registrar_oveja', methods=['GET', 'POST'])
 def registrar_oveja():
@@ -27,58 +28,8 @@ def registrar_oveja():
         db.session.add(nueva_oveja)
         db.session.commit()
         flash('Oveja registrada exitosamente!', 'success')
-        return redirect(url_for('index'))
-    return render_template('registro_oveja.html', form=form)
-
-@app.route('/registrar_reproduccion', methods=['GET', 'POST'])
-def registrar_reproduccion():
-    form = ReproduccionForm()
-    if form.validate_on_submit():
-        nueva_reproduccion = Reproduccion(
-            id_oveja=form.id_oveja.data,
-            fecha_apareamiento=form.fecha_apareamiento.data,
-            id_macho=form.id_macho.data if form.id_macho.data is not None else None,
-            fecha_parto=form.fecha_parto.data if form.fecha_parto.data is not None else None,
-            num_crias=form.num_crias.data if form.num_crias.data is not None else None
-        )
-        db.session.add(nueva_reproduccion)
-        db.session.commit()
-        flash('Evento de reproducción registrado exitosamente!', 'success')
-        return redirect(url_for('index'))
-    return render_template('registrar_reproduccion.html', form=form)
-
-@app.route('/listar_reproduccion')
-def listar_reproduccion():
-    reproducciones = Reproduccion.query.all()  # Renombra la variable
-    return render_template('listar_reproduccion.html', reproducciones=reproducciones)
-
-@app.route('/eliminar_reproduccion/<int:id>', methods=['POST'])
-def eliminar_reproduccion(id):
-    reproduccion = Reproduccion.query.get_or_404(id)
-    db.session.delete(reproduccion)
-    db.session.commit()
-    flash('Reproducción eliminado correctamente', 'success')
-    return redirect(url_for('listar_reproduccion'))
-
-
-
-@app.route('/editar_reproduccion/<int:id>', methods=['GET', 'POST'])
-def editar_reproduccion(id):
-    reproduccion = Reproduccion.query.get_or_404(id)
-    form = ReproduccionForm(obj=reproduccion)
-
-    if form.validate_on_submit():
-        reproduccion.id_oveja = form.id_oveja.data
-        reproduccion.fecha_apareamiento = form.fecha_apareamiento.data
-        reproduccion.id_macho = form.id_macho.data if form.id_macho.data else None
-        reproduccion.fecha_parto = form.fecha_parto.data if form.fecha_parto.data else None
-        reproduccion.num_crias = form.num_crias.data if form.num_crias.data else None
-
-        db.session.commit()
-        flash('Reproducción actualizada correctamente', 'success')
-        return redirect(url_for('listar_reproduccion'))
-
-    return render_template('editar_reproduccion.html', form=form)
+        return redirect(url_for('listar_ovejas'))
+    return render_template('registrar_oveja.html', form=form)
 
 @app.route('/editar_oveja/<int:id>', methods=['GET', 'POST'])
 def editar_oveja(id):
@@ -104,49 +55,92 @@ def eliminar_oveja(id):
     flash('Oveja eliminada correctamente', 'success')
     return redirect(url_for('listar_ovejas'))
 
+@app.route('/registrar_reproduccion', methods=['GET', 'POST'])
+def registrar_reproduccion():
+    form = ReproduccionForm()
+    if form.validate_on_submit():
+        nueva_reproduccion = Reproduccion(
+            id_oveja=form.id_oveja.data,
+            fecha_apareamiento=form.fecha_apareamiento.data,
+            id_macho=form.id_macho.data if form.id_macho.data is not None else None,
+            fecha_parto=form.fecha_parto.data if form.fecha_parto.data is not None else None,
+            num_crias=form.num_crias.data if form.num_crias.data is not None else None
+        )
+        db.session.add(nueva_reproduccion)
+        db.session.commit()
+        flash('Evento de reproducción registrado exitosamente!', 'success')
+        return redirect(url_for('listar_reproduccion'))
+    return render_template('registrar_reproduccion.html', form=form)
+
+@app.route('/listar_reproduccion')
+def listar_reproduccion():
+    reproducciones = Reproduccion.query.all()
+    return render_template('listar_reproduccion.html', reproducciones=reproducciones)
+
+@app.route('/editar_reproduccion/<int:id>', methods=['GET', 'POST'])
+def editar_reproduccion(id):
+    reproduccion = Reproduccion.query.get_or_404(id)
+    form = ReproduccionForm(obj=reproduccion)
+    if form.validate_on_submit():
+        reproduccion.id_oveja = form.id_oveja.data
+        reproduccion.fecha_apareamiento = form.fecha_apareamiento.data
+        reproduccion.id_macho = form.id_macho.data if form.id_macho.data else None
+        reproduccion.fecha_parto = form.fecha_parto.data if form.fecha_parto.data else None
+        reproduccion.num_crias = form.num_crias.data if form.num_crias.data else None
+        db.session.commit()
+        flash('Reproducción actualizada correctamente', 'success')
+        return redirect(url_for('listar_reproduccion'))
+    return render_template('editar_reproduccion.html', form=form)
+
+@app.route('/eliminar_reproduccion/<int:id>', methods=['POST'])
+def eliminar_reproduccion(id):
+    reproduccion = Reproduccion.query.get_or_404(id)
+    db.session.delete(reproduccion)
+    db.session.commit()
+    flash('Reproducción eliminada correctamente', 'success')
+    return redirect(url_for('listar_reproduccion'))
+
 @app.route('/registrar_salud', methods=['GET', 'POST'])
 def registrar_salud():
     form = saludForm()
     if form.validate_on_submit():
         nuevo_registro = Salud(
-            id_oveja =form.id_oveja.data,
-            fecha =form.fecha.data,
+            id_oveja=form.id_oveja.data,
+            fecha=form.fecha.data,
             tipo_tratamiento=form.tipo_tratamiento.data,
-            detalle=form.detalle.data,   
+            detalle=form.detalle.data
         )
         db.session.add(nuevo_registro)
         db.session.commit()
-        flash(' registrado exitosamente!', 'success')
+        flash('Registro de salud registrado exitosamente!', 'success')
         return redirect(url_for('listar_salud'))
     return render_template('registrar_salud.html', form=form)
 
 @app.route('/listar_salud')
 def listar_salud():
-    salud = Salud.query.all()  
-    return render_template('listar_salud.html',salud = salud)
+    salud = Salud.query.all()
+    return render_template('listar_salud.html', salud=salud)
 
 @app.route('/editar_salud/<int:id>', methods=['GET', 'POST'])
 def editar_salud(id):
     salud = Salud.query.get_or_404(id)
     form = saludForm(obj=salud)
-    
-    if form.validate_on_submit(): 
+    if form.validate_on_submit():
         salud.id_oveja = form.id_oveja.data
         salud.fecha = form.fecha.data
         salud.tipo_tratamiento = form.tipo_tratamiento.data
         salud.detalle = form.detalle.data
         db.session.commit()
-        flash('actualizado con éxito', 'success')
+        flash('Registro de salud actualizado con éxito', 'success')
         return redirect(url_for('listar_salud'))
-    
-    return render_template('editar_salud.html', form=form , salud= salud)
+    return render_template('editar_salud.html', form=form, salud=salud)
 
 @app.route('/eliminar_salud/<int:id>', methods=['POST'])
 def eliminar_salud(id):
     salud = Salud.query.get_or_404(id)
     db.session.delete(salud)
     db.session.commit()
-    flash('eliminado correctamente', 'success')
+    flash('Registro de salud eliminado correctamente', 'success')
     return redirect(url_for('listar_salud'))
 
 @app.route('/registrar_alimentacion', methods=['GET', 'POST'])
@@ -161,6 +155,7 @@ def registrar_alimentacion():
         )
         db.session.add(nueva_alimentacion)
         db.session.commit()
+        flash('Alimentación registrada exitosamente!', 'success')
         return redirect(url_for('listar_alimentacion'))
     return render_template('registrar_alimentacion.html', form=form)
 
@@ -179,6 +174,7 @@ def editar_alimentacion(id):
         alimentacion.tipo_alimento = form.tipo_alimento.data
         alimentacion.cantidad = form.cantidad.data
         db.session.commit()
+        flash('Alimentación actualizada correctamente', 'success')
         return redirect(url_for('listar_alimentacion'))
     return render_template('editar_alimentacion.html', form=form)
 
@@ -187,13 +183,13 @@ def eliminar_alimentacion(id):
     alimentacion = Alimentacion.query.get_or_404(id)
     db.session.delete(alimentacion)
     db.session.commit()
+    flash('Alimentación eliminada correctamente', 'success')
     return redirect(url_for('listar_alimentacion'))
 
 @app.route('/registrar_venta', methods=['GET', 'POST'])
 def registrar_venta():
     form = VentaForm()
     if form.validate_on_submit():
-        # Crear la venta
         nueva_venta = Venta(
             id_oveja=form.id_oveja.data,
             fecha=form.fecha.data,
@@ -201,7 +197,6 @@ def registrar_venta():
             precio=form.precio.data
         )
         db.session.add(nueva_venta)
-        # Registrar la transacción financiera
         nueva_finanza = Finanzas(
             tipo='Venta',
             descripcion=f'Venta de {form.cantidad.data} oveja(s)',
@@ -210,14 +205,14 @@ def registrar_venta():
         )
         db.session.add(nueva_finanza)
         db.session.commit()
-        return redirect(url_for('listar_ventas'))
+        flash('Venta registrada exitosamente!', 'success')
+        return redirect(url_for('listar_venta'))
     return render_template('registrar_venta.html', form=form)
-
 
 @app.route('/listar_venta')
 def listar_venta():
     ventas = Venta.query.all()
-    return render_template('listar_ventas.html', ventas=ventas)
+    return render_template('listar_venta.html', ventas=ventas)
 
 @app.route('/editar_venta/<int:id>', methods=['GET', 'POST'])
 def editar_venta(id):
@@ -229,6 +224,7 @@ def editar_venta(id):
         venta.cantidad = form.cantidad.data
         venta.precio = form.precio.data
         db.session.commit()
+        flash('Venta actualizada correctamente', 'success')
         return redirect(url_for('listar_venta'))
     return render_template('editar_venta.html', form=form)
 
@@ -237,33 +233,30 @@ def eliminar_venta(id):
     venta = Venta.query.get_or_404(id)
     db.session.delete(venta)
     db.session.commit()
+    flash('Venta eliminada correctamente', 'success')
     return redirect(url_for('listar_venta'))
 
 @app.route('/registrar_compra', methods=['GET', 'POST'])
 def registrar_compra():
     form = CompraForm()
     if form.validate_on_submit():
-        # Crear la compra
         nueva_compra = Compra(
-            tipo_producto=form.tipo_producto.data,
-            descripcion=form.descripcion.data,
+            fecha=form.fecha.data,
             cantidad=form.cantidad.data,
-            precio=form.precio.data,
-            fecha=form.fecha.data
+            precio=form.precio.data
         )
         db.session.add(nueva_compra)
-        # Registrar la transacción financiera
         nueva_finanza = Finanzas(
             tipo='Compra',
-            descripcion=f'Compra de {form.cantidad.data} {form.tipo_producto.data}',
+            descripcion=f'Compra de {form.cantidad.data} oveja(s)',
             monto=form.precio.data,
             fecha=form.fecha.data
         )
         db.session.add(nueva_finanza)
         db.session.commit()
-        return redirect(url_for('listar_compras'))
+        flash('Compra registrada exitosamente!', 'success')
+        return redirect(url_for('listar_compra'))
     return render_template('registrar_compra.html', form=form)
-
 
 @app.route('/listar_compra')
 def listar_compra():
@@ -275,12 +268,11 @@ def editar_compra(id):
     compra = Compra.query.get_or_404(id)
     form = CompraForm(obj=compra)
     if form.validate_on_submit():
-        compra.tipo_producto = form.tipo_producto.data
-        compra.descripcion = form.descripcion.data
+        compra.fecha = form.fecha.data
         compra.cantidad = form.cantidad.data
         compra.precio = form.precio.data
-        compra.fecha = form.fecha.data
         db.session.commit()
+        flash('Compra actualizada correctamente', 'success')
         return redirect(url_for('listar_compra'))
     return render_template('editar_compra.html', form=form)
 
@@ -289,41 +281,25 @@ def eliminar_compra(id):
     compra = Compra.query.get_or_404(id)
     db.session.delete(compra)
     db.session.commit()
+    flash('Compra eliminada correctamente', 'success')
     return redirect(url_for('listar_compra'))
 
 @app.route('/listar_finanzas')
 def listar_finanzas():
-    finanzas = Finanzas.query.all()
+    finanzas = Finanzas.query.order_by(Finanzas.fecha.desc()).all()
     return render_template('listar_finanzas.html', finanzas=finanzas)
 
 @app.route('/analisis_financiero')
 def analisis_financiero():
-    # Consultar el total de ventas y compras
-    total_ventas = db.session.query(db.func.sum(Finanzas.monto)).filter(Finanzas.tipo == 'Venta').scalar()
-    total_compras = db.session.query(db.func.sum(Finanzas.monto)).filter(Finanzas.tipo == 'Compra').scalar()
-    # Manejar el caso cuando no hay ventas o compras
-    total_ventas = total_ventas or 0
-    total_compras = total_compras or 0
-    # Consultar el saldo total
-    saldo_total = total_ventas - total_compras
-    return render_template('analisis_financiero.html', 
-                           total_ventas=total_ventas, 
-                           total_compras=total_compras, 
-                           saldo_total=saldo_total)
+    ventas_total = db.session.query(func.sum(Venta.precio)).scalar() or 0
+    compras_total = db.session.query(func.sum(Compra.precio)).scalar() or 0
+    saldo_total = ventas_total - compras_total
+    return render_template('analisis_financiero.html', ventas_total=ventas_total, compras_total=compras_total, saldo_total=saldo_total)
 
 @app.route('/informe_mensual')
 def informe_mensual():
-    # Consultar el total de ventas por mes
-    ventas_por_mes = db.session.query(
-        db.func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
-        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Venta').label('total_ventas')
-    ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
-    # Consultar el total de compras por mes
-    compras_por_mes = db.session.query(
-        db.func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
-        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Compra').label('total_compras')
-    ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
-
-    return render_template('informe_mensual.html', 
-                           ventas_por_mes=ventas_por_mes, 
-                           compras_por_mes=compras_por_mes)
+    informe = db.session.query(
+        func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
+        func.sum(Finanzas.monto).label('total')
+    ).group_by('mes').all()
+    return render_template('informe_mensual.html', informe=informe)
