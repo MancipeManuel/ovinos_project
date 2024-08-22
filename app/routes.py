@@ -324,6 +324,40 @@ def informe_mensual():
         db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Compra').label('total_compras')
     ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
 
-    return render_template('informe_mensual.html', 
-                           ventas_por_mes=ventas_por_mes, 
-                           compras_por_mes=compras_por_mes)
+    return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
+
+
+# index vacios------------------------------------------------------------------------------------------------------
+@app.route('/index1')
+def index1 ():
+    
+    return render_template('index1.html')
+
+@app.route('/index2')
+def index2():
+    return render_template('index2.html')
+
+@app.route('/index3')
+def index3():
+    return render_template('index3.html')
+
+@app.route('/index4')
+def index4():
+    return render_template('index4.html')
+
+@app.route('/index5')
+def index5 ():
+    return render_template('index5.html')
+
+@app.route('/index6')
+def index6():
+    return render_template('index6.html')
+
+@app.route('/index7')
+def index7():
+    return render_template('index7.html')
+
+@app.route('/index8')
+def index8():
+    return render_template('index8.html')
+

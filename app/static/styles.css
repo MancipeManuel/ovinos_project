@@ -113,3 +113,47 @@ footer {
     background-color: #3c8dbc;
     color: white;
 }
+
+/* Barra de Navegación Vertical */
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #1c5d99;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-x: hidden;
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #ffffff;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #3c8dbc;
+    color: #ffcc00;
+}
+
+/* Ajustar el contenido principal para que no quede oculto detrás de la barra lateral */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+/* Ajustes adicionales para el diseño */
+.navbar {
+    margin-left: 250px; /* Asegura que la barra de navegación superior no se superponga con la barra lateral */
+}
+
+/* Resto del contenido */
+.container {
+    margin-left: 270px; /* Ajusta el margen izquierdo para evitar la barra lateral */
+}
+
