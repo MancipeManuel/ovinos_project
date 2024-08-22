@@ -7,7 +7,7 @@
 <body>
     <div class="navbar">
         <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('listar_ovejas') }}">Ver Ovejas</a>
+        <a href="{{ url_for('listar_ovejas') }}">listar Ovejas</a>
         <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
         <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
         <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
@@ -17,6 +17,10 @@
         <a href="{{url_for('listar_alimentacion')}}">Listar alimentacion</a></li>
         <a href="{{url_for('listar_venta')}}">Listar ventas</a></li>
         <a href="{{url_for('registrar_venta')}}">registrar ventas</a></li>
+        <a href="{{url_for('registrar_compra')}}">registrar compras</a></li>
+        <a href="{{url_for('listar_compra')}}">listar compras</a></li>
+        <a href="{{url_for('listar_finanzas')}}">listar finanzas</a></li>
+
     </div>
     <div class="container">
         {% block content %}{% endblock %}

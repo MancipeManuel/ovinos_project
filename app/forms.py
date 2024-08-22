@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, SelectField, IntegerField, SubmitField,FloatField,DecimalField
+from wtforms import StringField, DateField, SelectField, IntegerField, SubmitField,FloatField,DecimalField,TextAreaField
 from wtforms.validators import DataRequired, Optional,NumberRange
 
 class OvejaForm(FlaskForm):
@@ -39,3 +39,18 @@ class VentaForm(FlaskForm):
     cantidad = IntegerField('Cantidad', validators=[DataRequired(), NumberRange(min=1)])
     precio = DecimalField('Precio', validators=[DataRequired(), NumberRange(min=0)])
     submit = SubmitField('Guardar')
+
+class CompraForm(FlaskForm):
+    tipo_producto = StringField('Tipo de Producto', validators=[DataRequired()])
+    descripcion = TextAreaField('Descripción', validators=[DataRequired()])
+    cantidad = FloatField('Cantidad', validators=[DataRequired()])
+    precio = FloatField('Precio', validators=[DataRequired()])
+    fecha = DateField('Fecha', format='%Y-%m-%d', validators=[DataRequired()])
+    submit = SubmitField('Guardar')
+    
+class FinanzasForm(FlaskForm):
+    tipo = SelectField('Tipo', choices=[('Venta', 'Venta'), ('Compra', 'Compra')], validators=[DataRequired()])
+    descripcion = TextAreaField('Descripción', validators=[DataRequired()])
+    monto = FloatField('Monto', validators=[DataRequired()])
+    fecha = DateField('Fecha', validators=[DataRequired()])
+    submit = SubmitField('Registrar')

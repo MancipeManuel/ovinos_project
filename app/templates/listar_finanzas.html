@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Finanzas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Informe de Finanzas</h1>
+
+    <!-- Enlaces para navegación -->
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('listar_finanzas') }}">Listar Finanzas</a></li>
+            <li><a href="{{ url_for('analisis_financiero') }}">Análisis Financiero</a></li>
+            <li><a href="{{ url_for('informe_mensual') }}">Informe Mensual</a></li>
+        </ul>
+    </nav>
+
+    <!-- Tabla de Finanzas -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for finanza in finanzas %}
+                <tr>
+                    <td>{{ finanza.id }}</td>
+                    <td>{{ finanza.tipo }}</td>
+                    <td>{{ finanza.descripcion }}</td>
+                    <td>{{ finanza.monto }}</td>
+                    <td>{{ finanza.fecha }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

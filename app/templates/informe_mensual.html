@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe Mensual</title>
+</head>
+<body>
+    <h1>Informe Mensual</h1>
+    
+    <h2>Ventas por Mes</h2>
+    <table border="1">
+        <tr>
+            <th>Mes</th>
+            <th>Total Ventas</th>
+        </tr>
+        {% for venta in ventas_por_mes %}
+        <tr>
+            <td>{{ venta.mes }}</td>
+            <td>${{ venta.total_ventas }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Compras por Mes</h2>
+    <table border="1">
+        <tr>
+            <th>Mes</th>
+            <th>Total Compras</th>
+        </tr>
+        {% for compra in compras_por_mes %}
+        <tr>
+            <td>{{ compra.mes }}</td>
+            <td>${{ compra.total_compras }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <a href="{{ url_for('listar_finanzas') }}">Volver a Listar Finanzas</a>
+    <a href="{{ url_for('analisis_financiero') }}">Ir al Análisis Financiero</a>
+</body>
+</html>

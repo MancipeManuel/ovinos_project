@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from app import app, db
-from app.forms import OvejaForm,ReproduccionForm,saludForm,AlimentacionForm,VentaForm
-from app.models import Oveja,Reproduccion,Salud,Alimentacion,Venta
+from app.forms import OvejaForm,ReproduccionForm,saludForm,AlimentacionForm,VentaForm,CompraForm
+from app.models import Oveja,Reproduccion,Salud,Alimentacion,Venta,Compra,Finanzas
 
 @app.route('/listar_ovejas')
 def listar_ovejas():
@@ -193,6 +193,7 @@ def eliminar_alimentacion(id):
 def registrar_venta():
     form = VentaForm()
     if form.validate_on_submit():
+        # Crear la venta
         nueva_venta = Venta(
             id_oveja=form.id_oveja.data,
             fecha=form.fecha.data,
@@ -200,9 +201,18 @@ def registrar_venta():
             precio=form.precio.data
         )
         db.session.add(nueva_venta)
+        # Registrar la transacción financiera
+        nueva_finanza = Finanzas(
+            tipo='Venta',
+            descripcion=f'Venta de {form.cantidad.data} oveja(s)',
+            monto=form.precio.data,
+            fecha=form.fecha.data
+        )
+        db.session.add(nueva_finanza)
         db.session.commit()
-        return redirect(url_for('listar_venta'))
+        return redirect(url_for('listar_ventas'))
     return render_template('registrar_venta.html', form=form)
+
 
 @app.route('/listar_venta')
 def listar_venta():
@@ -228,3 +238,92 @@ def eliminar_venta(id):
     db.session.delete(venta)
     db.session.commit()
     return redirect(url_for('listar_venta'))
+
+@app.route('/registrar_compra', methods=['GET', 'POST'])
+def registrar_compra():
+    form = CompraForm()
+    if form.validate_on_submit():
+        # Crear la compra
+        nueva_compra = Compra(
+            tipo_producto=form.tipo_producto.data,
+            descripcion=form.descripcion.data,
+            cantidad=form.cantidad.data,
+            precio=form.precio.data,
+            fecha=form.fecha.data
+        )
+        db.session.add(nueva_compra)
+        # Registrar la transacción financiera
+        nueva_finanza = Finanzas(
+            tipo='Compra',
+            descripcion=f'Compra de {form.cantidad.data} {form.tipo_producto.data}',
+            monto=form.precio.data,
+            fecha=form.fecha.data
+        )
+        db.session.add(nueva_finanza)
+        db.session.commit()
+        return redirect(url_for('listar_compras'))
+    return render_template('registrar_compra.html', form=form)
+
+
+@app.route('/listar_compra')
+def listar_compra():
+    compras = Compra.query.all()
+    return render_template('listar_compra.html', compras=compras)
+
+@app.route('/editar_compra/<int:id>', methods=['GET', 'POST'])
+def editar_compra(id):
+    compra = Compra.query.get_or_404(id)
+    form = CompraForm(obj=compra)
+    if form.validate_on_submit():
+        compra.tipo_producto = form.tipo_producto.data
+        compra.descripcion = form.descripcion.data
+        compra.cantidad = form.cantidad.data
+        compra.precio = form.precio.data
+        compra.fecha = form.fecha.data
+        db.session.commit()
+        return redirect(url_for('listar_compra'))
+    return render_template('editar_compra.html', form=form)
+
+@app.route('/eliminar_compra/<int:id>', methods=['POST'])
+def eliminar_compra(id):
+    compra = Compra.query.get_or_404(id)
+    db.session.delete(compra)
+    db.session.commit()
+    return redirect(url_for('listar_compra'))
+
+@app.route('/listar_finanzas')
+def listar_finanzas():
+    finanzas = Finanzas.query.all()
+    return render_template('listar_finanzas.html', finanzas=finanzas)
+
+@app.route('/analisis_financiero')
+def analisis_financiero():
+    # Consultar el total de ventas y compras
+    total_ventas = db.session.query(db.func.sum(Finanzas.monto)).filter(Finanzas.tipo == 'Venta').scalar()
+    total_compras = db.session.query(db.func.sum(Finanzas.monto)).filter(Finanzas.tipo == 'Compra').scalar()
+    # Manejar el caso cuando no hay ventas o compras
+    total_ventas = total_ventas or 0
+    total_compras = total_compras or 0
+    # Consultar el saldo total
+    saldo_total = total_ventas - total_compras
+    return render_template('analisis_financiero.html', 
+                           total_ventas=total_ventas, 
+                           total_compras=total_compras, 
+                           saldo_total=saldo_total)
+
+@app.route('/informe_mensual')
+def informe_mensual():
+    # Consultar el total de ventas por mes
+    ventas_por_mes = db.session.query(
+        db.func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
+        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Venta').label('total_ventas')
+    ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
+    # Consultar el total de compras por mes
+    compras_por_mes = db.session.query(
+        db.func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
+        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Compra').label('total_compras')
+    ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
+
+    return render_template('informe_mensual.html', 
+                           ventas_por_mes=ventas_por_mes, 
+                           compras_por_mes=compras_por_mes)
