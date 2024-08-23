@@ -8,14 +8,13 @@
 <body>
     <div class="navbar">
         <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('listar_ovejas') }}">Ver Ovejas</a>
-        <a href="{{ url_for('registrar_reproduccion') }}">Agregar Reproducción</a>
-        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
-        <a href="{{ url_for('listar_reproduccion') }}">Listar Reproducción</a>
-        <a href="{{ url_for('registrar_salud') }}">Registrar Salud</a>
-        <a href="{{ url_for('listar_salud') }}">Listar Salud</a>
-        <a href="{{ url_for('listar_compra') }}">ver compras hechas</a>
-        <a href="{{url_for('listar_finanzas')}}">listar finanzas</a></li>
+        <a href="{{ url_for('oveja') }}"> ovejas  </a>
+        <a href="{{ url_for('salud') }}">salud</a>
+        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
+        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
+        <a href="{{url_for('finanzas')}}">finanzas</a></li>
+        <a href="{{url_for('venta')}}">ventas</a></li>
+        <a href="{{url_for('compra')}}">compras</a></li>
     </div>
     <div class="container">
         {% block content %}{% endblock %}

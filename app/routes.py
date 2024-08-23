@@ -212,7 +212,7 @@ def registrar_venta():
 @app.route('/listar_venta')
 def listar_venta():
     ventas = Venta.query.all()
-    return render_template('listar_venta.html', ventas=ventas)
+    return render_template('listar_ventas.html', ventas=ventas)
 
 @app.route('/editar_venta/<int:id>', methods=['GET', 'POST'])
 def editar_venta(id):
@@ -314,37 +314,37 @@ def informe_mensual():
 
 
 # index vacios------------------------------------------------------------------------------------------------------
-@app.route('/index1')
-def index1 ():
+@app.route('/oveja')
+def oveja ():
     
-    return render_template('index1.html')
+    return render_template('ovejas.html')
 
-@app.route('/index2')
-def index2():
-    return render_template('index2.html')
+@app.route('/salud')
+def salud():
+    return render_template('salud.html')
 
-@app.route('/index3')
-def index3():
-    return render_template('index3.html')
+@app.route('/reproduccion')
+def reproduccion():
+    return render_template('reproduccion.html')
 
-@app.route('/index4')
-def index4():
-    return render_template('index4.html')
+@app.route('/alimentacion')
+def alimentacion():
+    return render_template('alimentacion.html')
 
-@app.route('/index5')
-def index5 ():
-    return render_template('index5.html')
+@app.route('/inventario')
+def inventario ():
+    return render_template('inventario.html')
 
-@app.route('/index6')
-def index6():
-    return render_template('index6.html')
+@app.route('/finanzas')
+def finanzas():
+    return render_template('finanzas.html')
 
-@app.route('/index7')
-def index7():
-    return render_template('index7.html')
+@app.route('/venta')
+def venta():
+    return render_template('venta.html')
 
-@app.route('/index8')
-def index8():
-    return render_template('index8.html')
+@app.route('/compra')
+def compra():
+    return render_template('compra.html')
 
 
