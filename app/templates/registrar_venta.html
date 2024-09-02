@@ -22,6 +22,10 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
+    <div class="sidebar">
+        <a href="{{url_for('listar_venta')}}">Listar ventas</a></li>
+        <a href="{{url_for('registrar_venta')}}">registrar ventas</a></li>
+    </div>
     
     <h1>Registrar Nueva Venta</h1>
     <form method="POST" action="{{ url_for('registrar_venta') }}">
