@@ -347,4 +347,14 @@ def venta():
 def compra():
     return render_template('compra.html')
 
+@app.route('/buzon')
+def buzon():
+    return render_template('buzon.html')
+
+@app.route('/recetas')
+def recetas():
+    return render_template('recetas.html')
+
+
+
 
