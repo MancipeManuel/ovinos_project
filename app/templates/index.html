@@ -5,6 +5,9 @@
     <title>Gestión de Ovinos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
 </head>
+<style>
+    
+</style>
 <body>
     <div class="navbar">
         <a href="{{ url_for('index') }}">Inicio</a>
@@ -22,5 +25,20 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
+    
+
+
+    <div class="nombre">
+        <p>Ver el catálogo actualizado</p>
+        <a href="{{ url_for('buzon') }}">Ir al catálogo</a>
+    </div>
+
+    <div class="nombre">
+        <p>recetas alternativas</p>
+        <a href="{{ url_for('recetas') }}">ver recetas</a>
+    </div>
+    
+    
+    
 </body>
 </html>
