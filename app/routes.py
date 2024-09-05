@@ -355,6 +355,10 @@ def buzon():
 def recetas():
     return render_template('recetas.html')
 
+@app.route('/notificacion')
+def notificacion():
+    return render_template('notificaciones.html')
+
 
 
 
