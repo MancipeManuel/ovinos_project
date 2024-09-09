@@ -1,8 +1,9 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash,request
 from app import app, db
-from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm
-from app.models import Oveja, Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas
+from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm,InventarioForm
+from app.models import Oveja, Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas,Inventario
 from sqlalchemy import func
+from datetime import datetime, timedelta
 
 @app.route('/')
 def index():
@@ -312,11 +313,52 @@ def informe_mensual():
 
     return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
 
+@app.route('/listar_inventario', methods=['GET'])
+def listar_inventario():
+    inventario = Inventario.query.all()
+    return render_template('listar_inventario.html', inventario=inventario)
 
-# index vacios------------------------------------------------------------------------------------------------------
-@app.route('/oveja')
-def oveja ():
+@app.route('/inventario_nuevo', methods=['GET', 'POST'])
+def insertar_inventario():
+    form = InventarioForm()
+    if form.validate_on_submit():
+        nuevo_item = Inventario(
+            tipo=form.tipo.data,
+            descripcion=form.descripcion.data,
+            cantidad=form.cantidad.data,
+            fecha_adquisicion=form.fecha_adquisicion.data
+        )
+        db.session.add(nuevo_item)
+        db.session.commit()
+        return redirect(url_for('listar_inventario'))
+    return render_template('insertar_inventario.html', form=form)
+
+@app.route('/inventario_editar/<int:id>', methods=['GET', 'POST'])
+def editar_inventario(id):
+    item = Inventario.query.get_or_404(id)
+    form = InventarioForm(obj=item)
     
+    if form.validate_on_submit():
+        item.tipo = form.tipo.data
+        item.descripcion = form.descripcion.data
+        item.cantidad = form.cantidad.data
+        item.fecha_adquisicion = form.fecha_adquisicion.data
+        db.session.commit()
+        return redirect(url_for('listar_inventario'))
+    
+    return render_template('editar_inventario.html', form=form, item=item)
+
+@app.route('/inventario_eliminar/<int:id>', methods=['POST'])
+def eliminar_inventario(id):
+    print(request.form)  # Imprime los datos del formulario para depuración
+    item = Inventario.query.get_or_404(id)
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for('listar_inventario'))
+
+
+@app.route('/oveja')
+def oveja():
     return render_template('ovejas.html')
 
 @app.route('/salud')
@@ -332,7 +374,7 @@ def alimentacion():
     return render_template('alimentacion.html')
 
 @app.route('/inventario')
-def inventario ():
+def inventario():
     return render_template('inventario.html')
 
 @app.route('/finanzas')

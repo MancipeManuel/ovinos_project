@@ -12,9 +12,8 @@ class Oveja(db.Model):
     padre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_padre], post_update=True)
     madre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_madre], post_update=True)
 
-    def __repr__(self):
+    def _repr_(self):
         return f'<Oveja {self.nombre}>'
-
 
 class Salud(db.Model):
     id = db.Column(db.Integer, primary_key=True)

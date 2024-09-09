@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, SelectField, IntegerField, SubmitField,FloatField,DecimalField,TextAreaField
-from wtforms.validators import DataRequired, Optional,NumberRange
+from wtforms.validators import DataRequired, Optional,NumberRange,Length
 
 class OvejaForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
@@ -54,3 +54,10 @@ class FinanzasForm(FlaskForm):
     monto = FloatField('Monto', validators=[DataRequired()])
     fecha = DateField('Fecha', validators=[DataRequired()])
     submit = SubmitField('Registrar')
+
+class InventarioForm(FlaskForm):
+    tipo = StringField('Tipo', validators=[DataRequired()])
+    descripcion = StringField('Descripción', validators=[DataRequired()])
+    cantidad = FloatField('Cantidad', validators=[DataRequired()])
+    fecha_adquisicion = DateField('Fecha de Adquisición', format='%Y-%m-%d', validators=[DataRequired()])
+    submit = SubmitField('Guardar')
