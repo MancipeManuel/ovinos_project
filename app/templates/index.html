@@ -7,6 +7,9 @@
 </head>
 <body>
     <div class="navbar">
+        <div  class="boton-close">
+            <a href="{{ url_for('logout') }}">salir</a>
+            </div>
         <a href="{{ url_for('index') }}">Inicio</a>
         <a href="{{ url_for('oveja') }}"> ovejas  </a>
         <a href="{{ url_for('salud') }}">salud</a>
