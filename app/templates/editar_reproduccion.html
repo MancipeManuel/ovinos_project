@@ -11,7 +11,7 @@
             const fechaApareamiento = document.getElementById('fecha_apareamiento').value;
             if (fechaApareamiento) {
                 const dateApareamiento = new Date(fechaApareamiento);
-                const periodoGestacion = 150 * 24 * 60 * 60 * 1000;
+                const periodoGestacion = 150 * 24 * 60 * 60 * 1000; // 150 días en milisegundos
                 const fechaParto = new Date(dateApareamiento.getTime() + periodoGestacion);
                 const año = fechaParto.getFullYear();
                 const mes = String(fechaParto.getMonth() + 1).padStart(2, '0');
@@ -21,7 +21,20 @@
                 document.getElementById('fecha_parto').value = '';
             }
         }
+    
+        // Función para enviar una notificación
+        function enviarNotificacion(mensaje) {
+            const panel = document.getElementById('panel_notificaciones');
+            const notificacion = document.createElement('div');
+            notificacion.classList.add('notificacion');
+            notificacion.innerText = mensaje;
+            panel.appendChild(notificacion);
+        }
+        
+        // Llamar a la función de enviar notificación con un mensaje adecuado
+        enviarNotificacion('Un nuevo miembro del rebaño está por nacer');
     </script>
+    
 </head>
 <body>
     <div class="navbar">
@@ -41,7 +54,7 @@
         &copy; 2024 Gestión de Ovinos
     </footer>
     <div class="sidebar">
-   
+    <a href="{{ url_for('index') }}">Inicio</a>
     <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
     <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
     </div>
@@ -85,5 +98,6 @@
         </p>
         <p>{{ form.submit(class_='btn') }}</p>
     </form>
+
 </body>
 </html>
