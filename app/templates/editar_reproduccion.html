@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Reproducción</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
     <script>
         // Función para calcular la fecha de parto
         function calcularFechaParto() {
@@ -22,6 +23,31 @@
             }
         }
     </script>
+
+   
+<script>
+    // Función para calcular la fecha de parto
+    function calcularFechaParto() {
+        const fechaApareamiento = document.getElementById('fecha_apareamiento').value;
+        if (fechaApareamiento) {
+            const dateApareamiento = new Date(fechaApareamiento);
+            const periodoGestacion = 150 * 24 * 60 * 60 * 1000; // 150 días en milisegundos
+            const fechaParto = new Date(dateApareamiento.getTime() + periodoGestacion);
+            const año = fechaParto.getFullYear();
+            const mes = String(fechaParto.getMonth() + 1).padStart(2, '0');
+            const día = String(fechaParto.getDate()).padStart(2, '0');
+            document.getElementById('fecha_parto').value = `${año}-${mes}-${día}`;
+            
+            // Mostrar mensaje después de calcular la fecha de parto
+            enviarNotificacion('La fecha de parto estimada es ' + `${año}-${mes}-${día}`);
+        } else {
+            document.getElementById('fecha_parto').value = '';
+        }
+    }
+
+</script>
+    
+
 </head>
 <body>
     <div class="navbar">

@@ -31,6 +31,20 @@
         <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
         <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
         </div>
+    <br><br><br><br>
+        
+{% if mensaje4 %}
+    <div class="alert alert-success">{{ mensaje4 }}</div>
+{% endif %}
+
+{% if mensaje5 %}
+    <div class="alert alert-info">{{ mensaje5 }}</div>
+{% endif %}
+
+{% if mensaje6 %}
+    <div class="alert alert-warning">{{ mensaje6 }}</div>
+{% endif %}
+
        
     </body>
 </html>
