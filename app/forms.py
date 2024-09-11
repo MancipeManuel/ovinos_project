@@ -2,6 +2,18 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, SelectField, IntegerField, SubmitField,FloatField,DecimalField,TextAreaField
 from wtforms.validators import DataRequired, Optional,NumberRange,Length
 
+class ReporteForm(FlaskForm):
+    tipo_reporte = SelectField('Tipo de Reporte', choices=[
+        ('ovejas', 'Ovejas'),
+        ('salud', 'Salud'),
+        ('reproduccion', 'Reproducción'),
+        ('alimentacion', 'Alimentación'),
+        ('inventario', 'Inventario'),
+        ('finanzas', 'Finanzas')
+    ], validators=[DataRequired()])
+    formato = SelectField('Formato', choices=[('excel', 'Excel'), ('pdf', 'PDF')], validators=[DataRequired()])
+    submit = SubmitField('Generar Reporte')
+
 class OvejaForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
     fecha_nacimiento = DateField('Fecha de Nacimiento', validators=[DataRequired()])
