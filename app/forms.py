@@ -27,6 +27,18 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+class ReporteForm(FlaskForm):
+    tipo_reporte = SelectField('Tipo de Reporte', choices=[
+        ('ovejas', 'Ovejas'),
+        ('salud', 'Salud'),
+        ('reproduccion', 'Reproducción'),
+        ('alimentacion', 'Alimentación'),
+        ('inventario', 'Inventario'),
+        ('finanzas', 'Finanzas')
+    ], validators=[DataRequired()])
+    formato = SelectField('Formato', choices=[('excel', 'Excel'), ('pdf', 'PDF')], validators=[DataRequired()])
+    submit = SubmitField('Generar Reporte')
+
 class OvejaForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
     fecha_nacimiento = DateField('Fecha de Nacimiento', validators=[DataRequired()])
@@ -79,3 +91,10 @@ class FinanzasForm(FlaskForm):
     monto = FloatField('Monto', validators=[DataRequired()])
     fecha = DateField('Fecha', validators=[DataRequired()])
     submit = SubmitField('Registrar')
+
+class InventarioForm(FlaskForm):
+    tipo = StringField('Tipo', validators=[DataRequired()])
+    descripcion = StringField('Descripción', validators=[DataRequired()])
+    cantidad = FloatField('Cantidad', validators=[DataRequired()])
+    fecha_adquisicion = DateField('Fecha de Adquisición', format='%Y-%m-%d', validators=[DataRequired()])
+    submit = SubmitField('Guardar')

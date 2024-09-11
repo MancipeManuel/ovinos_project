@@ -25,9 +25,14 @@ class Oveja(db.Model):
     id_madre = db.Column(db.Integer, db.ForeignKey('oveja.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+
     padre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_padre], backref='hijos_padre', uselist=False)
     madre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_madre], backref='hijos_madre', uselist=False)
     user = db.relationship('User', backref='ovejas')
+
+    def _repr_(self):
+        return f'<Oveja {self.nombre}>'
+
 
 class Salud(db.Model):
     id = db.Column(db.Integer, primary_key=True)

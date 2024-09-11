@@ -1,10 +1,112 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request,send_file
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm, LoginForm, RegistrationForm
-from app.models import Oveja,Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas, User
+from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm, LoginForm, RegistrationForm, InventarioForm, ReporteForm
+from app.models import Oveja,Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas, User,Inventario
 from sqlalchemy import func
 
+#---
+import os
+from app.reportes import (
+    generate_ovejas_report,
+    generate_salud_report,
+    generate_reproduccion_report,
+    generate_alimentacion_report,
+    generate_inventario_report,
+    generate_finanzas_report,
+    generate_ovejas_pdf_report,
+    generate_salud_pdf_report,
+    generate_reproduccion_pdf_report,
+    generate_alimentacion_pdf_report,
+    generate_inventario_pdf_report,
+    generate_finanzas_pdf_report
+)
+
+# Directorio para archivos temporales
+TMP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp')
+
+# Crear el directorio si no existe
+if not os.path.exists(TMP_DIR):
+    os.makedirs(TMP_DIR)
+
+@app.route('/reportes', methods=['GET'])
+def reportes_view():
+    form = ReporteForm()  # Crea una instancia del formulario
+    return render_template('reportes.html', form=form)
+
+@app.route('/generar_reporte', methods=['POST'])
+def generar_reporte():
+    tipo_reporte = request.form.get('tipo_reporte')
+    formato = request.form.get('formato')
+
+    filename = None
+    file_path = None
+
+    if formato == 'excel':
+        if tipo_reporte == 'ovejas':
+            filename = 'reporte_ovejas.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_ovejas_report(file_path)
+        elif tipo_reporte == 'salud':
+            filename = 'reporte_salud.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_salud_report(file_path)
+        elif tipo_reporte == 'reproduccion':
+            filename = 'reporte_reproduccion.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_reproduccion_report(file_path)
+        elif tipo_reporte == 'alimentacion':
+            filename = 'reporte_alimentacion.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_alimentacion_report(file_path)
+        elif tipo_reporte == 'inventario':
+            filename = 'reporte_inventario.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_inventario_report(file_path)
+        elif tipo_reporte == 'finanzas':
+            filename = 'reporte_finanzas.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_finanzas_report(file_path)
+    elif formato == 'pdf':
+        if tipo_reporte == 'ovejas':
+            filename = 'reporte_ovejas.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_ovejas_pdf_report(file_path)
+        elif tipo_reporte == 'salud':
+            filename = 'reporte_salud.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_salud_pdf_report(file_path)
+        elif tipo_reporte == 'reproduccion':
+            filename = 'reporte_reproduccion.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_reproduccion_pdf_report(file_path)
+        elif tipo_reporte == 'alimentacion':
+            filename = 'reporte_alimentacion.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_alimentacion_pdf_report(file_path)
+        elif tipo_reporte == 'inventario':
+            filename = 'reporte_inventario.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_inventario_pdf_report(file_path)
+        elif tipo_reporte == 'finanzas':
+            filename = 'reporte_finanzas.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_finanzas_pdf_report(file_path)
+    else:
+        return "Formato no válido", 400
+    
+    # Verificar que el archivo se haya generado y enviar el archivo
+    if os.path.exists(file_path):
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=filename
+        )
+    else:
+        return "Archivo no encontrado", 404
+
+
+#---
 @app.route('/')
 @login_required
 def index():
@@ -367,11 +469,52 @@ def informe_mensual():
 
     return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
 
+@app.route('/listar_inventario', methods=['GET'])
+def listar_inventario():
+    inventario = Inventario.query.all()
+    return render_template('listar_inventario.html', inventario=inventario)
 
-# index vacios------------------------------------------------------------------------------------------------------
+@app.route('/inventario_nuevo', methods=['GET', 'POST'])
+def insertar_inventario():
+    form = InventarioForm()
+    if form.validate_on_submit():
+        nuevo_item = Inventario(
+            tipo=form.tipo.data,
+            descripcion=form.descripcion.data,
+            cantidad=form.cantidad.data,
+            fecha_adquisicion=form.fecha_adquisicion.data
+        )
+        db.session.add(nuevo_item)
+        db.session.commit()
+        return redirect(url_for('listar_inventario'))
+    return render_template('insertar_inventario.html', form=form)
+
+@app.route('/inventario_editar/<int:id>', methods=['GET', 'POST'])
+def editar_inventario(id):
+    item = Inventario.query.get_or_404(id)
+    form = InventarioForm(obj=item)
+    
+    if form.validate_on_submit():
+        item.tipo = form.tipo.data
+        item.descripcion = form.descripcion.data
+        item.cantidad = form.cantidad.data
+        item.fecha_adquisicion = form.fecha_adquisicion.data
+        db.session.commit()
+        return redirect(url_for('listar_inventario'))
+    
+    return render_template('editar_inventario.html', form=form, item=item)
+
+@app.route('/inventario_eliminar/<int:id>', methods=['POST'])
+def eliminar_inventario(id):
+    print(request.form)  # Imprime los datos del formulario para depuración
+    item = Inventario.query.get_or_404(id)
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for('listar_inventario'))
+
+
 @app.route('/oveja')
-@login_required
-def oveja ():
+def oveja():
     return render_template('ovejas.html')
 
 @app.route('/salud')
