@@ -1,38 +1,50 @@
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
-    </head>
-    <body>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('oveja') }}"> ovejas </a>
+        <a href="{{ url_for('salud') }}">salud</a>
+        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
+        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
+        <a href="{{url_for('finanzas')}}">finanzas</a></li>
+        <a href="{{url_for('venta')}}">ventas</a></li>
+        <a href="{{url_for('compra')}}">compras</a></li>
+    </div>
 
-        <div class="navbar">
-            <a href="{{ url_for('index') }}">Inicio</a>
-            <a href="{{ url_for('oveja') }}"> ovejas  </a>
-            <a href="{{ url_for('salud') }}">salud</a>
-            <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-            <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-            <a href="{{url_for('finanzas')}}">finanzas</a></li>
-            <a href="{{url_for('venta')}}">ventas</a></li>
-            <a href="{{url_for('compra')}}">compras</a></li>
-        </div>
-       
-        <div class="container">
-            {% block content %}{% endblock %}
-        </div>
-        <footer>
-            &copy; 2024 Gestión de Ovinos
-        </footer>
-        <div class="sidebar">
-            <a href="{{ url_for('index') }}">Inicio</a>
-            <a href="{{ url_for('listar_ovejas') }}">listar Ovejas</a>
-            <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
-        </div>
-        
-    </body>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
+    <div class="sidebar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('listar_ovejas') }}">listar Ovejas</a>
+        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+    </div>
+    <br><br><br><br>
+
+{% if mensaje1 %}
+     <div class="alert alert-success">{{ mensaje1 }}</div>
+{% endif %}
+    
+{% if mensaje2 %}
+    <div class="alert alert-info">{{ mensaje2 }}</div>
+{% endif %}
+
+{% if mensaje3 %}
+    <div class="alert alert-warning">{{ mensaje3 }}</div>
+{% endif %}
+
+</body>
+
 </html>

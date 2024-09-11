@@ -54,3 +54,7 @@ class FinanzasForm(FlaskForm):
     monto = FloatField('Monto', validators=[DataRequired()])
     fecha = DateField('Fecha', validators=[DataRequired()])
     submit = SubmitField('Registrar')
+
+
+
+

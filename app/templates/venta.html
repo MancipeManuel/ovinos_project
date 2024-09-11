@@ -31,5 +31,20 @@
         <a href="{{url_for('listar_venta')}}">Listar ventas</a></li>
         <a href="{{url_for('registrar_venta')}}">registrar ventas</a></li>
         </div>
+    <br><br><br><br>
+    
+        
+{% if mensaje13 %}
+    <div class="alert alert-success">{{ mensaje13 }}</div>
+{% endif %}
+
+{% if mensaje14 %}
+    <div class="alert alert-info">{{ mensaje14 }}</div>
+{% endif %}
+
+{% if mensaje15 %}
+    <div class="alert alert-warning">{{ mensaje15 }}</div>
+{% endif %}
+
     </body>
 </html>
