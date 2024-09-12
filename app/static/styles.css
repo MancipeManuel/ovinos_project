@@ -29,7 +29,7 @@ body {
 }
 
 .navbar a:hover {
-    color: #ffcc00;
+    color: #1c5d99;
 }
 
 /* Barra de Navegación Vertical */
@@ -57,7 +57,7 @@ body {
 
 .sidebar a:hover {
     background-color: #3c8dbc;
-    color: #ffcc00;
+    color: #1c5d99;
 }
 
 /* Ajustar el contenido principal para que no quede oculto detrás de la barra lateral */
@@ -69,17 +69,34 @@ body {
 
 /* Forms */
 form {
-    margin: 20px 0;
+    max-width: 500px;
+    margin: 20px auto; /* Centra el formulario horizontalmente */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
 }
 
 input[type="text"],
 input[type="number"],
-select {
+input[type="email"],
+input[type="password"],
+select,
+textarea {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
 }
 
 button {
@@ -94,6 +111,27 @@ button {
 
 button:hover {
     background-color: #3c8dbc;
+}
+
+/* Botones de Login y Register */
+.btn-login,
+.btn-register {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1c5d99; /* Color de fondo para el login y register */
+    color: #f1e8e8; /* Color del texto */
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.btn-login:hover,
+.btn-register:hover {
+    background-color: #1c5d99; /* Mantener el color de fondo al pasar el ratón */
+    color: #f5f7fa; /* Color del texto al pasar el ratón */
+    border: 1px solid #1c5d99;
 }
 
 /* Tables */
@@ -127,7 +165,7 @@ footer {
     padding: 10px;
     position: fixed;
     bottom: 0;
-    width: calc(100%); 
+    width: calc(100%);
     right: 0;
     z-index: 850; /* Debe estar por debajo de la barra lateral, pero por encima del contenido principal */
 }
@@ -161,6 +199,39 @@ canvas {
     width: 100% !important;
     height: auto !important;
 }
+
+/* Botón de Cierre de Sección */
+.btn-close {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #ff4d4d; /* Color de fondo para el botón de cierre */
+    color: #fff; /* Color del texto */
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #d9534f; /* Color del borde */
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-close:hover {
+    background-color: #d9534f; /* Color de fondo al pasar el ratón */
+    color: #fff; /* Color del texto al pasar el ratón */
+}
+
+/* Ejemplo de cómo se puede usar en un formulario */
+.form-group {
+    position: relative; /* Necesario para posicionar el botón de cierre */
+    margin-bottom: 15px;
+}
+
+.btn-close {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+}
+
 .nombre {
     background-color: #fff; /* Fondo blanco para el contenedor */
     border: 1px solid #ddd; /* Borde sutil alrededor del contenedor */
@@ -192,4 +263,5 @@ canvas {
 .nombre a:hover {
     background-color: #0056b3; /* Color de fondo al pasar el ratón */
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Sombra más intensa al pasar el ratón */
+
 }

@@ -47,4 +47,30 @@
 
 </body>
 
+
+
+        <div class="navbar">
+            <a href="{{ url_for('index') }}">Inicio</a>
+            <a href="{{ url_for('oveja') }}"> ovejas  </a>
+            <a href="{{ url_for('salud') }}">salud</a>
+            <a href="{{url_for('reproduccion')}}"> reproduccion</a>
+            <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
+            <a href="{{url_for('finanzas')}}">finanzas</a></li>
+            <a href="{{url_for('venta')}}">ventas</a></li>
+            <a href="{{url_for('compra')}}">compras</a></li>
+        </div>
+       
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+        <footer>
+            &copy; 2024 Gestión de Ovinos
+        </footer>
+        <div class="sidebar">
+            <a href="{{ url_for('index') }}">Inicio</a>
+            <a href="{{ url_for('listar_ovejas') }}">listar Ovejas</a>
+            <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+
+    </body>
+
 </html>

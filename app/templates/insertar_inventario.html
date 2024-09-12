@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Añadir Nuevo Item</title>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('oveja') }}"> ovejas  </a>
+        <a href="{{ url_for('salud') }}">salud</a>
+        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
+        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
+        <a href="{{url_for('finanzas')}}">finanzas</a></li>
+        <a href="{{url_for('venta')}}">ventas</a></li>
+        <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{url_for('inventario')}}">inventario</a></li>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
+    <div class="sidebar">
+        <a href="{{url_for('listar_inventario')}}">listar inventario</a></li>
+        <a href="{{ url_for('insertar_inventario') }}">Agregar inventario</a>
+        </div>
+    <h1>Añadir Nuevo Item</h1>
+    <form method="POST" action="{{ url_for('insertar_inventario') }}">
+        {{ form.hidden_tag() }}
+        <label for="tipo">Tipo:</label>
+        <input type="text" name="tipo" id="tipo" required>
+        
+        <label for="descripcion">Descripción:</label>
+        <input type="text" name="descripcion" id="descripcion" required>
+        
+        <label for="cantidad">Cantidad:</label>
+        <input type="text" name="cantidad" id="cantidad" required>
+        
+        <label for="fecha_adquisicion">Fecha de Adquisición:</label>
+        <input type="date" name="fecha_adquisicion" id="fecha_adquisicion" required>
+        
+        <input type="submit" value="Guardar">
+    </form>
+    
+</body>
+</html>

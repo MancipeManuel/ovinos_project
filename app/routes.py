@@ -2,18 +2,165 @@ from flask import render_template, redirect, url_for, session
 from app import app, db
 from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm 
 from app.models import Oveja, Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas
+from flask import render_template, redirect, url_for, flash, request,send_file
+from flask_login import login_user, logout_user, login_required, current_user
+from app import app, db
+from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm, LoginForm, RegistrationForm, InventarioForm, ReporteForm
+from app.models import Oveja,Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas, User,Inventario
+
 from sqlalchemy import func
 
+#---
+import os
+from app.reportes import (
+    generate_ovejas_report,
+    generate_salud_report,
+    generate_reproduccion_report,
+    generate_alimentacion_report,
+    generate_inventario_report,
+    generate_finanzas_report,
+    generate_ovejas_pdf_report,
+    generate_salud_pdf_report,
+    generate_reproduccion_pdf_report,
+    generate_alimentacion_pdf_report,
+    generate_inventario_pdf_report,
+    generate_finanzas_pdf_report
+)
+
+# Directorio para archivos temporales
+TMP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp')
+
+# Crear el directorio si no existe
+if not os.path.exists(TMP_DIR):
+    os.makedirs(TMP_DIR)
+
+@app.route('/reportes', methods=['GET'])
+def reportes_view():
+    form = ReporteForm()  # Crea una instancia del formulario
+    return render_template('reportes.html', form=form)
+
+@app.route('/generar_reporte', methods=['POST'])
+def generar_reporte():
+    tipo_reporte = request.form.get('tipo_reporte')
+    formato = request.form.get('formato')
+
+    filename = None
+    file_path = None
+
+    if formato == 'excel':
+        if tipo_reporte == 'ovejas':
+            filename = 'reporte_ovejas.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_ovejas_report(file_path)
+        elif tipo_reporte == 'salud':
+            filename = 'reporte_salud.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_salud_report(file_path)
+        elif tipo_reporte == 'reproduccion':
+            filename = 'reporte_reproduccion.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_reproduccion_report(file_path)
+        elif tipo_reporte == 'alimentacion':
+            filename = 'reporte_alimentacion.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_alimentacion_report(file_path)
+        elif tipo_reporte == 'inventario':
+            filename = 'reporte_inventario.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_inventario_report(file_path)
+        elif tipo_reporte == 'finanzas':
+            filename = 'reporte_finanzas.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_finanzas_report(file_path)
+    elif formato == 'pdf':
+        if tipo_reporte == 'ovejas':
+            filename = 'reporte_ovejas.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_ovejas_pdf_report(file_path)
+        elif tipo_reporte == 'salud':
+            filename = 'reporte_salud.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_salud_pdf_report(file_path)
+        elif tipo_reporte == 'reproduccion':
+            filename = 'reporte_reproduccion.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_reproduccion_pdf_report(file_path)
+        elif tipo_reporte == 'alimentacion':
+            filename = 'reporte_alimentacion.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_alimentacion_pdf_report(file_path)
+        elif tipo_reporte == 'inventario':
+            filename = 'reporte_inventario.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_inventario_pdf_report(file_path)
+        elif tipo_reporte == 'finanzas':
+            filename = 'reporte_finanzas.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_finanzas_pdf_report(file_path)
+    else:
+        return "Formato no válido", 400
+    
+    # Verificar que el archivo se haya generado y enviar el archivo
+    if os.path.exists(file_path):
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=filename
+        )
+    else:
+        return "Archivo no encontrado", 404
+
+
+#---
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
+
 #----------------------------------------------------------aqui empieza las ovejas --------------------
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)  # Generar la contraseña hash
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!', 'success')
+        return redirect(url_for('login'))  # Redirigir al login después del registro
+    return render_template('registro.html', form=form,)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)  # Inicia sesión del usuario
+            next_page = request.args.get('next')  # Redirige a la página solicitada después del login
+            return redirect(next_page) if next_page else redirect(url_for('index'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out!', 'success')
+    return redirect(url_for('login'))
+
+
 @app.route('/listar_ovejas')
+@login_required
 def listar_ovejas():
-    ovejas = Oveja.query.all()
+    ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
     return render_template('listar_ovejas.html', ovejas=ovejas)
 
 @app.route('/registrar_oveja', methods=['GET', 'POST'])
+@login_required
 def registrar_oveja():
     form = OvejaForm()
     if form.validate_on_submit():
@@ -24,6 +171,10 @@ def registrar_oveja():
             sexo=form.sexo.data,
             id_padre=form.id_padre.data if form.id_padre.data else None,
             id_madre=form.id_madre.data if form.id_madre.data else None,
+
+
+            user_id=current_user.id  # Asignar el user_id del usuario actual
+
         )
         db.session.add(nueva_oveja)
         db.session.commit()
@@ -33,8 +184,9 @@ def registrar_oveja():
 
 
 @app.route('/editar_oveja/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_oveja(id):
-    oveja = Oveja.query.get_or_404(id)
+    oveja = Oveja.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = OvejaForm(obj=oveja)
     if form.validate_on_submit():
         oveja.nombre = form.nombre.data
@@ -50,8 +202,9 @@ def editar_oveja(id):
 
 
 @app.route('/eliminar_oveja/<int:id>', methods=['POST'])
+@login_required
 def eliminar_oveja(id):
-    oveja = Oveja.query.get_or_404(id)
+    oveja = Oveja.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(oveja)
     db.session.commit()
     session['notificacion3'] = 'Oveja eliminada correctamente.'
@@ -61,6 +214,7 @@ def eliminar_oveja(id):
 #-----------------------------------------------------------------reproduccion-------------------------
 
 @app.route('/registrar_reproduccion', methods=['GET', 'POST'])
+@login_required
 def registrar_reproduccion():
     form = ReproduccionForm()
     if form.validate_on_submit():
@@ -69,7 +223,8 @@ def registrar_reproduccion():
             fecha_apareamiento=form.fecha_apareamiento.data,
             id_macho=form.id_macho.data if form.id_macho.data is not None else None,
             fecha_parto=form.fecha_parto.data if form.fecha_parto.data is not None else None,
-            num_crias=form.num_crias.data if form.num_crias.data is not None else None
+            num_crias=form.num_crias.data if form.num_crias.data is not None else None,
+            user_id=current_user.id  # Asignar el user_id del usuario actual
         )
         db.session.add(nueva_reproduccion)
         db.session.commit()
@@ -78,13 +233,15 @@ def registrar_reproduccion():
     return render_template('registrar_reproduccion.html', form=form)
 
 @app.route('/listar_reproduccion')
+@login_required
 def listar_reproduccion():
-    reproducciones = Reproduccion.query.all()
+    reproducciones = Reproduccion.query.filter_by(user_id=current_user.id).all()
     return render_template('listar_reproduccion.html', reproducciones=reproducciones)
 
 @app.route('/editar_reproduccion/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_reproduccion(id):
-    reproduccion = Reproduccion.query.get_or_404(id)
+    reproduccion = Reproduccion.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = ReproduccionForm(obj=reproduccion)
     if form.validate_on_submit():
         reproduccion.id_oveja = form.id_oveja.data
@@ -98,8 +255,9 @@ def editar_reproduccion(id):
     return render_template('editar_reproduccion.html', form=form)
 
 @app.route('/eliminar_reproduccion/<int:id>', methods=['POST'])
+@login_required
 def eliminar_reproduccion(id):
-    reproduccion = Reproduccion.query.get_or_404(id)
+    reproduccion = Reproduccion.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(reproduccion)
     db.session.commit()
     session['notificacion6'] = 'registro de reproduccion eliminado'
@@ -109,6 +267,7 @@ def eliminar_reproduccion(id):
 #---------------------------------------------------------------------salud-------------------------
 
 @app.route('/registrar_salud', methods=['GET', 'POST'])
+@login_required
 def registrar_salud():
     form = saludForm()
     if form.validate_on_submit():
@@ -116,7 +275,8 @@ def registrar_salud():
             id_oveja=form.id_oveja.data,
             fecha=form.fecha.data,
             tipo_tratamiento=form.tipo_tratamiento.data,
-            detalle=form.detalle.data
+            detalle=form.detalle.data,
+            user_id=current_user.id  # Asignar el user_id del usuario actual
         )
         db.session.add(nuevo_registro)
         db.session.commit()
@@ -125,13 +285,15 @@ def registrar_salud():
     return render_template('registrar_salud.html', form=form)
 
 @app.route('/listar_salud')
+@login_required
 def listar_salud():
-    salud = Salud.query.all()
+    salud = Salud.query.filter_by(user_id=current_user.id).all()
     return render_template('listar_salud.html', salud=salud)
 
 @app.route('/editar_salud/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_salud(id):
-    salud = Salud.query.get_or_404(id)
+    salud = Salud.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = saludForm(obj=salud)
     if form.validate_on_submit():
         salud.id_oveja = form.id_oveja.data
@@ -144,8 +306,9 @@ def editar_salud(id):
     return render_template('editar_salud.html', form=form, salud=salud)
 
 @app.route('/eliminar_salud/<int:id>', methods=['POST'])
+@login_required
 def eliminar_salud(id):
-    salud = Salud.query.get_or_404(id)
+    salud = Salud.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(salud)
     db.session.commit()
     session['notificacion9'] = 'tratamiento eliminado correctamente'
@@ -155,6 +318,7 @@ def eliminar_salud(id):
 #--------------------------------------------------------------alimentación-----------------------------
 
 @app.route('/registrar_alimentacion', methods=['GET', 'POST'])
+@login_required
 def registrar_alimentacion():
     form = AlimentacionForm()
     if form.validate_on_submit():
@@ -162,7 +326,8 @@ def registrar_alimentacion():
             id_oveja=form.id_oveja.data,
             fecha=form.fecha.data,
             tipo_alimento=form.tipo_alimento.data,
-            cantidad=form.cantidad.data
+            cantidad=form.cantidad.data,
+            user_id=current_user.id  # Asignar el user_id del usuario actual
         )
         db.session.add(nueva_alimentacion)
         db.session.commit()
@@ -175,13 +340,15 @@ def registrar_alimentacion():
 
 
 @app.route('/listar_alimentacion')
+@login_required
 def listar_alimentacion():
-    alimentaciones = Alimentacion.query.all()
+    alimentaciones = Alimentacion.query.filter_by(user_id=current_user.id).all()
     return render_template('listar_alimentacion.html', alimentaciones=alimentaciones)
 
 @app.route('/editar_alimentacion/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_alimentacion(id):
-    alimentacion = Alimentacion.query.get_or_404(id)
+    alimentacion = Alimentacion.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = AlimentacionForm(obj=alimentacion)
     if form.validate_on_submit():
         alimentacion.id_oveja = form.id_oveja.data
@@ -189,13 +356,19 @@ def editar_alimentacion(id):
         alimentacion.tipo_alimento = form.tipo_alimento.data
         alimentacion.cantidad = form.cantidad.data
         db.session.commit()
+
         session['notificacion11'] = 'alimento editado correctamente'
         return redirect(url_for('alimentacion'))
+
+        flash('Alimentación actualizada con éxito', 'success')
+        return redirect(url_for('listar_alimentacion'))
+
     return render_template('editar_alimentacion.html', form=form)
 
 @app.route('/eliminar_alimentacion/<int:id>', methods=['POST'])
+@login_required
 def eliminar_alimentacion(id):
-    alimentacion = Alimentacion.query.get_or_404(id)
+    alimentacion = Alimentacion.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(alimentacion)
     db.session.commit()
     session['notificacion12']= 'alimento eliminado correctamente'
@@ -205,6 +378,7 @@ def eliminar_alimentacion(id):
 #---------------------------------------------------------------ventas-------------------------------
 
 @app.route('/registrar_venta', methods=['GET', 'POST'])
+@login_required
 def registrar_venta():
     form = VentaForm()
     if form.validate_on_submit():
@@ -212,29 +386,25 @@ def registrar_venta():
             id_oveja=form.id_oveja.data,
             fecha=form.fecha.data,
             cantidad=form.cantidad.data,
-            precio=form.precio.data
+            precio=form.precio.data,
+            user_id=current_user.id  # Asignar el user_id del usuario actual
         )
         db.session.add(nueva_venta)
-        nueva_finanza = Finanzas(
-            tipo='Venta',
-            descripcion=f'Venta de {form.cantidad.data} oveja(s)',
-            monto=form.precio.data,
-            fecha=form.fecha.data
-        )
-        db.session.add(nueva_finanza)
         db.session.commit()
         session['notificacion13']= 'se registro la venta con exito'
         return redirect(url_for('venta'))
     return render_template('registrar_venta.html', form=form)
 
-@app.route('/listar_venta')
+@app.route('/listar_ventas')
+@login_required
 def listar_venta():
-    ventas = Venta.query.all()
+    ventas = Venta.query.filter_by(user_id=current_user.id).all()
     return render_template('listar_ventas.html', ventas=ventas)
 
 @app.route('/editar_venta/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_venta(id):
-    venta = Venta.query.get_or_404(id)
+    venta = Venta.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = VentaForm(obj=venta)
     if form.validate_on_submit():
         venta.id_oveja = form.id_oveja.data
@@ -242,21 +412,33 @@ def editar_venta(id):
         venta.cantidad = form.cantidad.data
         venta.precio = form.precio.data
         db.session.commit()
+
         session['notificacion14']='se edito la venta correctamente'
         return redirect(url_for('venta'))
+
+        flash('Venta actualizada con éxito', 'success')
+        return redirect(url_for('listar_ventas'))
+
     return render_template('editar_venta.html', form=form)
 
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
+@login_required
 def eliminar_venta(id):
-    venta = Venta.query.get_or_404(id)
+    venta = Venta.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(venta)
     db.session.commit()
+
     session['notificacion15']='se elimino la venta correctamente'
-    return redirect(url_for('venta'))
+    return redirect(url_for('venta'))   
+    flash('Venta eliminada correctamente', 'success')
+    return redirect(url_for('listar_ventas'))
 #-----------------------------------------------------------------termina venta-----------------------------
+
+   
 
 #-----------------------------------------------------------------compra--------------------------------
 @app.route('/registrar_compra', methods=['GET', 'POST'])
+@login_required
 def registrar_compra():
     form = CompraForm()
     if form.validate_on_submit():
@@ -265,57 +447,76 @@ def registrar_compra():
             descripcion=form.descripcion.data,
             cantidad=form.cantidad.data,
             precio=form.precio.data,
+
             fecha=form.fecha.data
+
+            fecha=form.fecha.data,
+            user_id=current_user.id  # Asignar el user_id del usuario actual
+
         )
         db.session.add(nueva_compra)
-        nueva_finanza = Finanzas(
-            tipo='Compra',
-            descripcion=f'Compra de {form.cantidad.data} oveja(s)',
-            monto=form.precio.data,
-            fecha=form.fecha.data
-        )
-        db.session.add(nueva_finanza)
         db.session.commit()
+
         session['notificacion16']='se registro la compra exitosamente'
         return redirect(url_for('compra'))
+    
+        flash('Compra registrada exitosamente!', 'success')
+        return redirect(url_for('listar_compra'))  # Asegúrate de que la ruta listar_compras esté definida
+
     return render_template('registrar_compra.html', form=form)
 
-@app.route('/listar_compra')
+@app.route('/listar_compras')
+@login_required
 def listar_compra():
-    compras = Compra.query.all()
+    compras = Compra.query.filter_by(user_id=current_user.id).all()
     return render_template('listar_compra.html', compras=compras)
 
 @app.route('/editar_compra/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_compra(id):
-    compra = Compra.query.get_or_404(id)
+    compra = Compra.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = CompraForm(obj=compra)
     if form.validate_on_submit():
         compra.fecha = form.fecha.data
+        compra.proveedor = form.proveedor.data
         compra.cantidad = form.cantidad.data
         compra.precio = form.precio.data
         db.session.commit()
+
         session['notificacion17']='se edito la compra correctamente'
         return redirect(url_for('compra'))
+
+        flash('Compra actualizada con éxito', 'success')
+        return redirect(url_for('listar_compras'))
+
     return render_template('editar_compra.html', form=form)
 
 @app.route('/eliminar_compra/<int:id>', methods=['POST'])
+@login_required
 def eliminar_compra(id):
-    compra = Compra.query.get_or_404(id)
+    compra = Compra.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(compra)
     db.session.commit()
+
     session['notificacion18']='se elimino correctamente la compra'
     return redirect(url_for('compra'))
 #--------------------------------------------------finaliza compra---------------------------------------
 
 #-----------------------------------------------------finanzas-------------------------------------
 
+    flash('Compra eliminada correctamente', 'success')
+    return redirect(url_for('listar_compras'))
+
+
 @app.route('/listar_finanzas')
+@login_required
 def listar_finanzas():
     finanzas = Finanzas.query.order_by(Finanzas.fecha.desc()).all()
     return render_template('listar_finanzas.html', finanzas=finanzas)
 #----------------------------------------------------------------------analisis financiero------------
 
 @app.route('/analisis_financiero')
+@login_required
 def analisis_financiero():
     ventas_total = db.session.query(func.sum(Venta.precio)).scalar() or 0
     compras_total = db.session.query(func.sum(Compra.precio)).scalar() or 0
@@ -323,8 +524,8 @@ def analisis_financiero():
     return render_template('analisis_financiero.html', ventas_total=ventas_total, compras_total=compras_total, saldo_total=saldo_total)
 
 @app.route('/informe_mensual')
+@login_required
 def informe_mensual():
-
     # Consultar el total de ventas por mes
     ventas_por_mes = db.session.query(
         db.func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
@@ -338,6 +539,11 @@ def informe_mensual():
 
     return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
 
+@app.route('/listar_inventario', methods=['GET'])
+def listar_inventario():
+    inventario = Inventario.query.all()
+    return render_template('listar_inventario.html', inventario=inventario)
+
 
 # index vacios------------------------------------------------------------------------------------------------------
 
@@ -349,7 +555,52 @@ def oveja():
     
     return render_template('ovejas.html',mensaje1=mensaje1 ,mensaje2=mensaje2, mensaje3=mensaje3)
 
+@app.route('/inventario_nuevo', methods=['GET', 'POST'])
+def insertar_inventario():
+    form = InventarioForm()
+    if form.validate_on_submit():
+        nuevo_item = Inventario(
+            tipo=form.tipo.data,
+            descripcion=form.descripcion.data,
+            cantidad=form.cantidad.data,
+            fecha_adquisicion=form.fecha_adquisicion.data
+        )
+        db.session.add(nuevo_item)
+        db.session.commit()
+        return redirect(url_for('listar_inventario'))
+    return render_template('insertar_inventario.html', form=form)
+
+@app.route('/inventario_editar/<int:id>', methods=['GET', 'POST'])
+def editar_inventario(id):
+    item = Inventario.query.get_or_404(id)
+    form = InventarioForm(obj=item)
+    
+    if form.validate_on_submit():
+        item.tipo = form.tipo.data
+        item.descripcion = form.descripcion.data
+        item.cantidad = form.cantidad.data
+        item.fecha_adquisicion = form.fecha_adquisicion.data
+        db.session.commit()
+        return redirect(url_for('listar_inventario'))
+    
+    return render_template('editar_inventario.html', form=form, item=item)
+
+@app.route('/inventario_eliminar/<int:id>', methods=['POST'])
+def eliminar_inventario(id):
+    print(request.form)  # Imprime los datos del formulario para depuración
+    item = Inventario.query.get_or_404(id)
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for('listar_inventario'))
+
+
+@app.route('/oveja')
+def oveja():
+    return render_template('ovejas.html')
+
+
 @app.route('/salud')
+@login_required
 def salud():
     mensaje7 = session.pop('notificacion7', None)
     mensaje8 = session.pop('notificacion8', None)
@@ -358,6 +609,7 @@ def salud():
     return render_template('salud.html',mensaje7=mensaje7,mensaje8=mensaje8,mensaje9=mensaje9)
 
 @app.route('/reproduccion')
+@login_required
 def reproduccion():
     mensaje4 = session.pop('notificacion4', None)
     mensaje5 = session.pop('notificacion5', None)
@@ -366,10 +618,12 @@ def reproduccion():
     return render_template('reproduccion.html',mensaje4=mensaje4,mensaje5=mensaje5,mensaje6=mensaje6)
 
 @app.route('/alimentacion')
+@login_required
 def alimentacion():
     mensaje10 = session.pop('notificacion10', None)
     mensaje11 = session.pop('notificacion11', None)
     mensaje12 = session.pop('notificacion12', None)
+
 
     return render_template('alimentacion.html',mensaje10=mensaje10,mensaje11=mensaje11,mensaje12=mensaje12)
 
@@ -392,9 +646,33 @@ def compra():
 
     return render_template('compra.html',mensaje16=mensaje16,mensaje17=mensaje17,mensaje18=mensaje18)
 
+
+@app.route('/inventario')
+@login_required
+def inventario ():
+    return render_template('inventario.html')
+
+
 @app.route('/finanzas')
+@login_required
 def finanzas():
     return render_template('finanzas.html')
+
+
+
+@app.route('/venta')
+@login_required
+def venta():
+    return render_template('venta.html')
+
+@app.route('/compra')
+@login_required
+def compra():
+    return render_template('compra.html')
+
+@app.route('/buzon')
+def buzon():
+    return render_template('buzon.html')
 
 @app.route('/recetas')
 def recetas():
