@@ -576,11 +576,6 @@ def eliminar_inventario(id):
     return redirect(url_for('listar_inventario'))
 
 
-@app.route('/oveja')
-def oveja():
-    return render_template('ovejas.html')
-
-
 @app.route('/salud')
 @login_required
 def salud():
@@ -629,40 +624,6 @@ def compra():
     return render_template('compra.html',mensaje16=mensaje16,mensaje17=mensaje17,mensaje18=mensaje18)
 
 
-@app.route('/inventario')
-@login_required
-def inventario ():
-    return render_template('inventario.html')
-
-
-@app.route('/finanzas')
-@login_required
-def finanzas():
-    return render_template('finanzas.html')
-
-
-
-@app.route('/venta')
-@login_required
-def venta():
-    return render_template('venta.html')
-
-@app.route('/compra')
-@login_required
-def compra():
-    return render_template('compra.html')
-
-@app.route('/buzon')
-def buzon():
-    return render_template('buzon.html')
-
-@app.route('/recetas')
-def recetas():
-    return render_template('recetas.html')
-
-@app.route('/catalogo')
-def catalogo():
-    return render_template('catalogo.html')
 
 
  
