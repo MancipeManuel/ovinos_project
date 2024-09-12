@@ -360,9 +360,6 @@ def editar_alimentacion(id):
         session['notificacion11'] = 'alimento editado correctamente'
         return redirect(url_for('alimentacion'))
 
-        flash('Alimentación actualizada con éxito', 'success')
-        return redirect(url_for('listar_alimentacion'))
-
     return render_template('editar_alimentacion.html', form=form)
 
 @app.route('/eliminar_alimentacion/<int:id>', methods=['POST'])
@@ -415,10 +412,6 @@ def editar_venta(id):
 
         session['notificacion14']='se edito la venta correctamente'
         return redirect(url_for('venta'))
-
-        flash('Venta actualizada con éxito', 'success')
-        return redirect(url_for('listar_ventas'))
-
     return render_template('editar_venta.html', form=form)
 
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
@@ -430,8 +423,6 @@ def eliminar_venta(id):
 
     session['notificacion15']='se elimino la venta correctamente'
     return redirect(url_for('venta'))   
-    flash('Venta eliminada correctamente', 'success')
-    return redirect(url_for('listar_ventas'))
 #-----------------------------------------------------------------termina venta-----------------------------
 
    
@@ -447,9 +438,6 @@ def registrar_compra():
             descripcion=form.descripcion.data,
             cantidad=form.cantidad.data,
             precio=form.precio.data,
-
-            fecha=form.fecha.data
-
             fecha=form.fecha.data,
             user_id=current_user.id  # Asignar el user_id del usuario actual
 
@@ -459,9 +447,7 @@ def registrar_compra():
 
         session['notificacion16']='se registro la compra exitosamente'
         return redirect(url_for('compra'))
-    
-        flash('Compra registrada exitosamente!', 'success')
-        return redirect(url_for('listar_compra'))  # Asegúrate de que la ruta listar_compras esté definida
+     # Asegúrate de que la ruta listar_compras esté definida
 
     return render_template('registrar_compra.html', form=form)
 
@@ -486,9 +472,6 @@ def editar_compra(id):
         session['notificacion17']='se edito la compra correctamente'
         return redirect(url_for('compra'))
 
-        flash('Compra actualizada con éxito', 'success')
-        return redirect(url_for('listar_compras'))
-
     return render_template('editar_compra.html', form=form)
 
 @app.route('/eliminar_compra/<int:id>', methods=['POST'])
@@ -504,8 +487,7 @@ def eliminar_compra(id):
 
 #-----------------------------------------------------finanzas-------------------------------------
 
-    flash('Compra eliminada correctamente', 'success')
-    return redirect(url_for('listar_compras'))
+
 
 
 @app.route('/listar_finanzas')
