@@ -18,6 +18,22 @@
         <a href="{{url_for('venta')}}">ventas</a></li>
         <a href="{{url_for('compra')}}">compras</a></li>
     </div>
+</br></br></br>
+<!-- Mostrar mensajes flash -->
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+</div>
+    
     <div class="container">
         {% block content %}{% endblock %}
     </div>
