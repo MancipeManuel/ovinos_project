@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Inventario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('oveja') }}"> ovejas  </a>
+        <a href="{{ url_for('salud') }}">salud</a>
+        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
+        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
+        <a href="{{url_for('finanzas')}}">finanzas</a></li>
+        <a href="{{url_for('venta')}}">ventas</a></li>
+        <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{url_for('inventario')}}">inventario</a></li>
+    </div>
+</br></br></br>
+<!-- Mostrar mensajes flash -->
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+</div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
+    <div class="sidebar">
+        <a href="{{url_for('listar_inventario')}}">listar inventario</a></li>
+        <a href="{{ url_for('insertar_inventario') }}">Agregar inventario</a>
+        </div>
+    <div class="container">
+        <h1 class="mt-5">Inventario</h1>
+
+        <table >
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Fecha de Adquisición</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventario %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.tipo }}</td>
+                    <td>{{ item.descripcion }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>{{ item.fecha_adquisicion.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_inventario', id=item.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                        <form action="{{ url_for('eliminar_inventario', id=item.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay items en el inventario</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

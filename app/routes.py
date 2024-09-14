@@ -4,10 +4,155 @@ from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, 
 from app.models import Oveja, Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas
 from sqlalchemy import func
 
+
+
+
+import os
+from app.reportes import (
+    generate_ovejas_report,
+    generate_salud_report,
+    generate_reproduccion_report,
+    generate_alimentacion_report,
+    generate_inventario_report,
+    generate_finanzas_report,
+    generate_ovejas_pdf_report,
+    generate_salud_pdf_report,
+    generate_reproduccion_pdf_report,
+    generate_alimentacion_pdf_report,
+    generate_inventario_pdf_report,
+    generate_finanzas_pdf_report
+)
+
+# Directorio para archivos temporales
+TMP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp')
+
+# Crear el directorio si no existe
+if not os.path.exists(TMP_DIR):
+    os.makedirs(TMP_DIR)
+
+@app.route('/reportes', methods=['GET'])
+def reportes_view():
+    form = ReporteForm()  # Crea una instancia del formulario
+    return render_template('reportes.html', form=form)
+
+@app.route('/generar_reporte', methods=['POST'])
+def generar_reporte():
+    tipo_reporte = request.form.get('tipo_reporte')
+    formato = request.form.get('formato')
+
+    filename = None
+    file_path = None
+
+    if formato == 'excel':
+        if tipo_reporte == 'ovejas':
+            filename = 'reporte_ovejas.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_ovejas_report(file_path)
+        elif tipo_reporte == 'salud':
+            filename = 'reporte_salud.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_salud_report(file_path)
+        elif tipo_reporte == 'reproduccion':
+            filename = 'reporte_reproduccion.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_reproduccion_report(file_path)
+        elif tipo_reporte == 'alimentacion':
+            filename = 'reporte_alimentacion.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_alimentacion_report(file_path)
+        elif tipo_reporte == 'inventario':
+            filename = 'reporte_inventario.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_inventario_report(file_path)
+        elif tipo_reporte == 'finanzas':
+            filename = 'reporte_finanzas.xlsx'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_finanzas_report(file_path)
+    elif formato == 'pdf':
+        if tipo_reporte == 'ovejas':
+            filename = 'reporte_ovejas.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_ovejas_pdf_report(file_path)
+        elif tipo_reporte == 'salud':
+            filename = 'reporte_salud.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_salud_pdf_report(file_path)
+        elif tipo_reporte == 'reproduccion':
+            filename = 'reporte_reproduccion.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_reproduccion_pdf_report(file_path)
+        elif tipo_reporte == 'alimentacion':
+            filename = 'reporte_alimentacion.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_alimentacion_pdf_report(file_path)
+        elif tipo_reporte == 'inventario':
+            filename = 'reporte_inventario.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_inventario_pdf_report(file_path)
+        elif tipo_reporte == 'finanzas':
+            filename = 'reporte_finanzas.pdf'
+            file_path = os.path.join(TMP_DIR, filename)
+            generate_finanzas_pdf_report(file_path)
+    else:
+        return "Formato no válido", 400
+    
+    # Verificar que el archivo se haya generado y enviar el archivo
+    if os.path.exists(file_path):
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=filename
+        )
+    else:
+        return "Archivo no encontrado", 404
+
+
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 #----------------------------------------------------------aqui empieza las ovejas --------------------
+
+
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)  # Generar la contraseña hash
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!', 'success')
+        return redirect(url_for('login'))  # Redirigir al login después del registro
+    return render_template('registro.html', form=form,)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)  # Inicia sesión del usuario
+            next_page = request.args.get('next')  # Redirige a la página solicitada después del login
+            return redirect(next_page) if next_page else redirect(url_for('index'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out!', 'success')
+    return redirect(url_for('login'))
+#----------------------------------------------------------aqui empieza las ovejas --------------------
+
+
+
 @app.route('/listar_ovejas')
 def listar_ovejas():
     ovejas = Oveja.query.all()
@@ -27,8 +172,8 @@ def registrar_oveja():
         )
         db.session.add(nueva_oveja)
         db.session.commit()
-        session['notificacion1'] = 'Oveja registrada exitosamente.'
-        return redirect(url_for('oveja'))
+        flash('oveja registrada ', 'success')
+        return redirect(url_for('listar_ovejas'))
     return render_template('registro_oveja.html', form=form)
 
 
@@ -44,8 +189,8 @@ def editar_oveja(id):
         oveja.id_padre = form.id_padre.data
         oveja.id_madre = form.id_madre.data
         db.session.commit()
-        session['notificacion2']= 'Oveja editada correctamente.'
-        return redirect(url_for('oveja'))
+        flash('oveja editada correctamente!', 'success')
+        return redirect(url_for('listar_ovejas'))
     return render_template('editar_oveja.html', form=form)
 
 
@@ -54,8 +199,8 @@ def eliminar_oveja(id):
     oveja = Oveja.query.get_or_404(id)
     db.session.delete(oveja)
     db.session.commit()
-    session['notificacion3'] = 'Oveja eliminada correctamente.'
-    return redirect(url_for('oveja'))
+    flash('oveja eliminada!', 'success')
+    return redirect(url_for('listar_ovejas'))
 #-----------------------------------------------------------------aqui termina-------------------------
 
 #-----------------------------------------------------------------reproduccion-------------------------
@@ -73,8 +218,8 @@ def registrar_reproduccion():
         )
         db.session.add(nueva_reproduccion)
         db.session.commit()
-        session['notificacion4'] = 'nuevo registro de reproduccion registrado'
-        return redirect(url_for('reproduccion'))
+        flash('registro nuevo de reproduccion registrado!', 'success')
+        return redirect(url_for('listar_reproduccion'))
     return render_template('registrar_reproduccion.html', form=form)
 
 @app.route('/listar_reproduccion')
@@ -93,8 +238,8 @@ def editar_reproduccion(id):
         reproduccion.fecha_parto = form.fecha_parto.data if form.fecha_parto.data else None
         reproduccion.num_crias = form.num_crias.data if form.num_crias.data else None
         db.session.commit()
-        session['notificacion5'] = 'regitro de reproduccion editadoco exito'
-        return redirect(url_for('reproduccion'))
+        flash('registro editado!', 'success')
+        return redirect(url_for('listar_reproduccion'))
     return render_template('editar_reproduccion.html', form=form)
 
 @app.route('/eliminar_reproduccion/<int:id>', methods=['POST'])
@@ -102,8 +247,8 @@ def eliminar_reproduccion(id):
     reproduccion = Reproduccion.query.get_or_404(id)
     db.session.delete(reproduccion)
     db.session.commit()
-    session['notificacion6'] = 'registro de reproduccion eliminado'
-    return redirect(url_for('reproduccion'))
+    flash('registro eliminado!', 'success')
+    return redirect(url_for('listar_reproduccion'))
 #----------------------------------------------------------------------termina reproduccion-------------
 
 #---------------------------------------------------------------------salud-------------------------
@@ -120,8 +265,8 @@ def registrar_salud():
         )
         db.session.add(nuevo_registro)
         db.session.commit()
-        session['notificacion7'] = 'tratamiento registrado conexito'
-        return redirect(url_for('salud'))
+        flash('tratamiento registrado!', 'success')
+        return redirect(url_for('listar_salud'))
     return render_template('registrar_salud.html', form=form)
 
 @app.route('/listar_salud')
@@ -139,8 +284,8 @@ def editar_salud(id):
         salud.tipo_tratamiento = form.tipo_tratamiento.data
         salud.detalle = form.detalle.data
         db.session.commit()
-        session['notificacion8'] = 'tratamiento editado con exito'
-        return redirect(url_for('salud'))
+        flash('tratamiento editado!', 'success')
+        return redirect(url_for('listar_salud'))
     return render_template('editar_salud.html', form=form, salud=salud)
 
 @app.route('/eliminar_salud/<int:id>', methods=['POST'])
@@ -148,8 +293,8 @@ def eliminar_salud(id):
     salud = Salud.query.get_or_404(id)
     db.session.delete(salud)
     db.session.commit()
-    session['notificacion9'] = 'tratamiento eliminado correctamente'
-    return redirect(url_for('salud'))
+    flash('tratamiento eliminado!', 'success')
+    return redirect(url_for('listar_salud'))
 #--------------------------------------------------------------termina salud----------------------------
 
 #--------------------------------------------------------------alimentación-----------------------------
@@ -168,8 +313,8 @@ def registrar_alimentacion():
         db.session.commit()
 
         # Emitir notificación a todos los clientes
-        session['notificacion10'] = 'alimento registrado exitosamente!'
-        return redirect(url_for('alimentacion'))  # Redirige a la vista de notificaciones # Redirige a la vista de notificaciones
+        flash('alimento registrado!', 'success')
+        return redirect(url_for('listar_alimentacion'))  # Redirige a la vista de notificaciones # Redirige a la vista de notificaciones
     return render_template('registrar_alimentacion.html', form=form)
 
 
@@ -189,8 +334,15 @@ def editar_alimentacion(id):
         alimentacion.tipo_alimento = form.tipo_alimento.data
         alimentacion.cantidad = form.cantidad.data
         db.session.commit()
+
         session['notificacion11'] = 'alimento editado correctamente'
         return redirect(url_for('alimentacion'))
+
+
+        flash('alimento editado!', 'success')
+        return redirect(url_for('listar_alimentacion'))
+
+
     return render_template('editar_alimentacion.html', form=form)
 
 @app.route('/eliminar_alimentacion/<int:id>', methods=['POST'])
@@ -198,8 +350,8 @@ def eliminar_alimentacion(id):
     alimentacion = Alimentacion.query.get_or_404(id)
     db.session.delete(alimentacion)
     db.session.commit()
-    session['notificacion12']= 'alimento eliminado correctamente'
-    return redirect(url_for('alimentacion'))
+    flash('alimento eliminado!', 'success')
+    return redirect(url_for('listar_alimentacion'))
 #---------------------------------------------------------------termina alimentacion------------------
 
 #---------------------------------------------------------------ventas-------------------------------
@@ -223,8 +375,8 @@ def registrar_venta():
         )
         db.session.add(nueva_finanza)
         db.session.commit()
-        session['notificacion13']= 'se registro la venta con exito'
-        return redirect(url_for('venta'))
+        flash('venta registrada!', 'success')
+        return redirect(url_for('listar_ventas'))
     return render_template('registrar_venta.html', form=form)
 
 @app.route('/listar_venta')
@@ -242,8 +394,14 @@ def editar_venta(id):
         venta.cantidad = form.cantidad.data
         venta.precio = form.precio.data
         db.session.commit()
+
         session['notificacion14']='se edito la venta correctamente'
         return redirect(url_for('venta'))
+
+
+        flash('venta editada!', 'success')
+        return redirect(url_for('listar_ventas'))
+
     return render_template('editar_venta.html', form=form)
 
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
@@ -251,8 +409,13 @@ def eliminar_venta(id):
     venta = Venta.query.get_or_404(id)
     db.session.delete(venta)
     db.session.commit()
+
     session['notificacion15']='se elimino la venta correctamente'
     return redirect(url_for('venta'))
+
+    flash('venta eliminada!', 'success')
+    return redirect(url_for('listar_ventas'))   
+
 #-----------------------------------------------------------------termina venta-----------------------------
 
 #-----------------------------------------------------------------compra--------------------------------
@@ -276,8 +439,16 @@ def registrar_compra():
         )
         db.session.add(nueva_finanza)
         db.session.commit()
+
         session['notificacion16']='se registro la compra exitosamente'
         return redirect(url_for('compra'))
+
+
+        flash('compra registrada!', 'success')
+        return redirect(url_for('listar_compra'))
+     # Asegúrate de que la ruta listar_compras esté definida
+
+
     return render_template('registrar_compra.html', form=form)
 
 @app.route('/listar_compra')
@@ -294,8 +465,15 @@ def editar_compra(id):
         compra.cantidad = form.cantidad.data
         compra.precio = form.precio.data
         db.session.commit()
+
         session['notificacion17']='se edito la compra correctamente'
         return redirect(url_for('compra'))
+
+
+        flash('compra editada!', 'success')
+        return redirect(url_for('listar_compra'))
+
+
     return render_template('editar_compra.html', form=form)
 
 @app.route('/eliminar_compra/<int:id>', methods=['POST'])
@@ -303,7 +481,12 @@ def eliminar_compra(id):
     compra = Compra.query.get_or_404(id)
     db.session.delete(compra)
     db.session.commit()
+
     session['notificacion18']='se elimino correctamente la compra'
+
+
+    flash('compra eliminada !', 'success')
+
     return redirect(url_for('compra'))
 #--------------------------------------------------finaliza compra---------------------------------------
 
@@ -339,6 +522,7 @@ def informe_mensual():
     return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
 
 
+
 # index vacios------------------------------------------------------------------------------------------------------
 
 @app.route('/oveja')
@@ -349,52 +533,101 @@ def oveja():
     
     return render_template('ovejas.html',mensaje1=mensaje1 ,mensaje2=mensaje2, mensaje3=mensaje3)
 
+
+@app.route('/listar_inventario', methods=['GET'])
+def listar_inventario():
+    inventario = Inventario.query.all()
+    return render_template('listar_inventario.html', inventario=inventario)
+#-----------------------------------------------------------------------------inventario---------------------
+
+@app.route('/inventario_nuevo', methods=['GET', 'POST'])
+def insertar_inventario():
+    form = InventarioForm()
+    if form.validate_on_submit():
+        nuevo_item = Inventario(
+            tipo=form.tipo.data,
+            descripcion=form.descripcion.data,
+            cantidad=form.cantidad.data,
+            fecha_adquisicion=form.fecha_adquisicion.data
+        )
+        db.session.add(nuevo_item)
+        db.session.commit()
+        flash('nuevo producto agregado al inenario','success')
+        return redirect(url_for('listar_inventario'))
+    return render_template('insertar_inventario.html', form=form)
+
+@app.route('/inventario_editar/<int:id>', methods=['GET', 'POST'])
+def editar_inventario(id):
+    item = Inventario.query.get_or_404(id)
+    form = InventarioForm(obj=item)
+    
+    if form.validate_on_submit():
+        item.tipo = form.tipo.data
+        item.descripcion = form.descripcion.data
+        item.cantidad = form.cantidad.data
+        item.fecha_adquisicion = form.fecha_adquisicion.data
+        db.session.commit()
+        flash('producto actualizado correctamente','success')
+        return redirect(url_for('listar_inventario'))
+    
+    return render_template('editar_inventario.html', form=form, item=item)
+
+@app.route('/inventario_eliminar/<int:id>', methods=['POST'])
+def eliminar_inventario(id):
+    print(request.form)  # Imprime los datos del formulario para depuración
+    item = Inventario.query.get_or_404(id)
+    db.session.delete(item)
+    db.session.commit()
+    flash('producto eliminado correctamente','success')
+    return redirect(url_for('listar_inventario'))
+
+
+# index vacios------------------------------------------------------------------------------------------------------
+
+@app.route('/oveja')
+def oveja():
+ 
+    
+    return render_template('ovejas.html',)
+
+
+
 @app.route('/salud')
 def salud():
-    mensaje7 = session.pop('notificacion7', None)
-    mensaje8 = session.pop('notificacion8', None)
-    mensaje9 = session.pop('notificacion9', None)
+  
 
-    return render_template('salud.html',mensaje7=mensaje7,mensaje8=mensaje8,mensaje9=mensaje9)
+    return render_template('salud.html')
 
 @app.route('/reproduccion')
 def reproduccion():
-    mensaje4 = session.pop('notificacion4', None)
-    mensaje5 = session.pop('notificacion5', None)
-    mensaje6 = session.pop('notificacion6', None) 
+    
 
-    return render_template('reproduccion.html',mensaje4=mensaje4,mensaje5=mensaje5,mensaje6=mensaje6)
+    return render_template('reproduccion.html')
 
 @app.route('/alimentacion')
 def alimentacion():
-    mensaje10 = session.pop('notificacion10', None)
-    mensaje11 = session.pop('notificacion11', None)
-    mensaje12 = session.pop('notificacion12', None)
+    return render_template('alimentacion.html')
 
-    return render_template('alimentacion.html',mensaje10=mensaje10,mensaje11=mensaje11,mensaje12=mensaje12)
 
 
 @app.route('/venta')
 def venta():
-    mensaje13 = session.pop('notificacion13', None)
-    mensaje14 = session.pop('notificacion14', None)
-    mensaje15 = session.pop('notificacion15', None)
+   
 
-    return render_template('venta.html',mensaje13=mensaje13,mensaje14=mensaje14,mensaje15=mensaje15)
+
+    return render_template('venta.html')
 
 @app.route('/compra')
 def compra():
 
-    mensaje16 = session.pop('notificacion16', None)
-    mensaje17 = session.pop('notificacion17', None)
-    mensaje18 = session.pop('notificacion18', None)
 
 
-    return render_template('compra.html',mensaje16=mensaje16,mensaje17=mensaje17,mensaje18=mensaje18)
+    return render_template('compra.html')
 
 @app.route('/finanzas')
 def finanzas():
     return render_template('finanzas.html')
+
 
 @app.route('/recetas')
 def recetas():
@@ -405,7 +638,29 @@ def recetas():
 def catalogo():
     return render_template('catalogo.html')
 
+@app.route('/finanzas')
+def finanzas():
+    return render_template('finanzas.html')
+ 
+@app.route('/inventario')
+def inventario():
+    return render_template('inventario.html')
 
+
+@app.route('/catalogo')
+def catalogo():
+    return render_template('catalogo.html')
+
+@app.route('/recetas')
+def recetas():
+    return render_template('recetas.html')
+#-------------------------------------------------funcion para mostrar las ovejas hembras-------------------
+# @app.route('/hembras')
+# def listar_reproduccion():
+#     reproducciones = Reproduccion.query.filter_by(user_id=current_user.id).all()
+#     return render_template('listar_reproduccion.html', reproducciones=reproducciones)
+
+ 
  
 
 
