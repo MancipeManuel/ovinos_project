@@ -71,7 +71,7 @@ class AlimentacionForm(FlaskForm):
     submit = SubmitField('Guardar')
     
 class VentaForm(FlaskForm):
-    id_oveja = IntegerField('ID de Oveja', validators=[DataRequired()])
+    id_oveja = IntegerField('ID Oveja', validators=[DataRequired()])
     fecha = DateField('Fecha', format='%Y-%m-%d', validators=[DataRequired()])
     cantidad = IntegerField('Cantidad', validators=[DataRequired(), NumberRange(min=1)])
     precio = DecimalField('Precio', validators=[DataRequired(), NumberRange(min=0)])

@@ -10,8 +10,8 @@
 </style>
 <body>
     <div class="navbar">
-        <div  class="boton-close">
-            <a href="{{ url_for('logout') }}">salir</a>
+        <div>
+            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
             </div>
         <a href="{{ url_for('index') }}">Inicio</a>
         <a href="{{ url_for('oveja') }}"> ovejas  </a>
@@ -32,7 +32,6 @@
     </footer>
     
 
-
     <div class="nombre">
         <p>Ver el catálogo actualizado</p>
         <a href="{{ url_for('buzon') }}">Ir al catálogo</a>
@@ -44,7 +43,7 @@
     </div>
     
     <div class="nombre">
-        <p>panelde notificaciones</p>
+        <p>panel de notificaciones</p>
         <a href="{{ url_for('notificacion') }}">ir a</a>
     </div>
     

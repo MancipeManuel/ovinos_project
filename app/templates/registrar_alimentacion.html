@@ -7,6 +7,9 @@
 </head>
 <body>
     <div class="navbar">
+        <div>
+            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
+            </div>
         <a href="{{ url_for('index') }}">Inicio</a>
         <a href="{{ url_for('oveja') }}"> ovejas  </a>
         <a href="{{ url_for('salud') }}">salud</a>
@@ -15,6 +18,8 @@
         <a href="{{url_for('finanzas')}}">finanzas</a></li>
         <a href="{{url_for('venta')}}">ventas</a></li>
         <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{url_for('inventario')}}">inventario</a>
+        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
     </div>
     <div class="container">
         {% block content %}{% endblock %}
@@ -22,14 +27,14 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
+    
     <div class="sidebar">
-    <a href="{{ url_for('index') }}">Inicio</a>
     <a href="{{url_for('registrar_alimentacion')}}">registrar alimentacion</a></li>
     <a href="{{url_for('listar_alimentacion')}}">Listar alimentacion</a></li>
     </div>
 
-    <h1>Agregar Alimentación</h1>
     <form method="POST">
+        <h1>Agregar Alimentación</h1>
         {{ form.hidden_tag() }}
         <p>{{ form.id_oveja.label }}<br>{{ form.id_oveja() }}</p>
         <p>{{ form.fecha.label }}<br>{{ form.fecha() }}</p>

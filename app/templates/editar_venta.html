@@ -9,24 +9,19 @@
 <body>
     <div class="navbar">
         <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{ url_for('oveja') }}">Ovejas</a>
+        <a href="{{ url_for('salud') }}">Salud</a>
+        <a href="{{ url_for('reproduccion') }}">Reproducción</a>
+        <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+        <a href="{{ url_for('finanzas') }}">Finanzas</a>
+        <a href="{{ url_for('venta') }}">Ventas</a>
+        <a href="{{ url_for('compra') }}">Compras</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
     </div>
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
-    <footer>
-        &copy; 2024 Gestión de Ovinos
-    </footer>
-    
     <div class="container">
         <h1>Editar Venta</h1>
-        <form method="POST" action="">
+        <form method="POST" action="{{ url_for('editar_venta', id=venta.id) }}">
             {{ form.hidden_tag() }}
             <p>
                 {{ form.id_oveja.label }}<br>
@@ -61,5 +56,8 @@
             </p>
         </form>
     </div>
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
 </body>
 </html>

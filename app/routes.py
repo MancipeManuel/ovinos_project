@@ -218,8 +218,22 @@ def registrar_reproduccion():
 @app.route('/listar_reproduccion')
 @login_required
 def listar_reproduccion():
-    reproducciones = Reproduccion.query.filter_by(user_id=current_user.id).all()
+    search_query = request.args.get('search', '')  # Obtener el término de búsqueda desde la solicitud
+    # Filtrar las reproducciones según el término de búsqueda
+    if search_query:
+        # Buscar por id_oveja, id_macho, o cualquier otro campo que desees
+        reproducciones = Reproduccion.query.filter(
+            (Reproduccion.id_oveja.contains(search_query)) |
+            (Reproduccion.id_macho.contains(search_query)) |
+            (Reproduccion.fecha_apareamiento.contains(search_query)) |
+            (Reproduccion.fecha_parto.contains(search_query))
+        ).filter_by(user_id=current_user.id).all()
+    else:
+        # Si no hay búsqueda, muestra todas las reproducciones
+        reproducciones = Reproduccion.query.filter_by(user_id=current_user.id).all()
+
     return render_template('listar_reproduccion.html', reproducciones=reproducciones)
+
 
 @app.route('/editar_reproduccion/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -360,10 +374,23 @@ def registrar_venta():
         return redirect(url_for('listar_venta'))
     return render_template('registrar_venta.html', form=form)
 
-@app.route('/listar_ventas')
+@app.route('/listar_ventas', methods=['GET'])
 @login_required
 def listar_venta():
-    ventas = Venta.query.filter_by(user_id=current_user.id).all()
+    # Obtiene el término de búsqueda desde la solicitud
+    search_query = request.args.get('search', '')
+
+    # Filtrar las ventas según el término de búsqueda
+    if search_query:
+        ventas = Venta.query.filter(
+            (Venta.id.like(f'%{search_query}%')) |
+            (Venta.id_oveja.like(f'%{search_query}%')) |
+            (Venta.precio.like(f'%{search_query}%'))  # Puedes agregar otros campos si es necesario
+        ).filter_by(user_id=current_user.id).all()
+    else:
+        # Si no hay término de búsqueda, muestra todas las ventas
+        ventas = Venta.query.filter_by(user_id=current_user.id).all()
+
     return render_template('listar_ventas.html', ventas=ventas)
 
 @app.route('/editar_venta/<int:id>', methods=['GET', 'POST'])
@@ -372,14 +399,19 @@ def editar_venta(id):
     venta = Venta.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = VentaForm(obj=venta)
     if form.validate_on_submit():
-        venta.id_oveja = form.id_oveja.data
-        venta.fecha = form.fecha.data
-        venta.cantidad = form.cantidad.data
-        venta.precio = form.precio.data
-        db.session.commit()
-        flash('Venta actualizada con éxito', 'success')
-        return redirect(url_for('listar_ventas'))
-    return render_template('editar_venta.html', form=form)
+        try:
+            venta.id_oveja = form.id_oveja.data
+            venta.fecha = form.fecha.data
+            venta.cantidad = form.cantidad.data
+            venta.precio = form.precio.data
+            db.session.commit()
+            flash('Venta actualizada con éxito', 'success')
+            return redirect(url_for('listar_venta'))  # Verifica que esta función esté definida y su ruta sea '/listar_ventas'
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ocurrió un error al actualizar la venta: {str(e)}', 'danger')
+
+    return render_template('editar_venta.html', form=form, venta=venta)
 
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
 @login_required
@@ -388,7 +420,8 @@ def eliminar_venta(id):
     db.session.delete(venta)
     db.session.commit()
     flash('Venta eliminada correctamente', 'success')
-    return redirect(url_for('listar_ventas'))
+    return redirect(url_for('listar_venta'))
+
 
 @app.route('/registrar_compra', methods=['GET', 'POST'])
 @login_required
@@ -470,11 +503,27 @@ def informe_mensual():
     return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
 
 @app.route('/listar_inventario', methods=['GET'])
+@login_required
 def listar_inventario():
-    inventario = Inventario.query.all()
-    return render_template('listar_inventario.html', inventario=inventario)
+    # Captura el término de búsqueda de los parámetros de la URL
+    search_query = request.args.get('search', '')
+    print(f"buscar {search_query}")
+    # Filtra los elementos de inventario según el término de búsqueda
+    if search_query:
+        print("entra al if")
+        inventario_items = Inventario.query.filter(
+            (Inventario.descripcion.like(f'%{search_query}%')) |
+            (Inventario.cantidad.like(f'%{search_query}%'))
+        ).all()
+        print(f"Finaliza el if {inventario_items}")
+    else:
+        # Si no hay término de búsqueda, muestra todos los elementos de inventario
+        inventario_items = Inventario.query.filter_by(user_id=current_user.id).all()
+
+    return render_template('listar_inventario.html', inventario=inventario_items)
 
 @app.route('/inventario_nuevo', methods=['GET', 'POST'])
+@login_required
 def insertar_inventario():
     form = InventarioForm()
     if form.validate_on_submit():
@@ -482,7 +531,8 @@ def insertar_inventario():
             tipo=form.tipo.data,
             descripcion=form.descripcion.data,
             cantidad=form.cantidad.data,
-            fecha_adquisicion=form.fecha_adquisicion.data
+            fecha_adquisicion=form.fecha_adquisicion.data,
+            user_id=current_user.id  # Asigna el ID del usuario actual
         )
         db.session.add(nuevo_item)
         db.session.commit()
@@ -490,23 +540,26 @@ def insertar_inventario():
     return render_template('insertar_inventario.html', form=form)
 
 @app.route('/inventario_editar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_inventario(id):
     item = Inventario.query.get_or_404(id)
-    form = InventarioForm(obj=item)
+    form = InventarioForm(obj=item) 
     
     if form.validate_on_submit():
         item.tipo = form.tipo.data
         item.descripcion = form.descripcion.data
         item.cantidad = form.cantidad.data
         item.fecha_adquisicion = form.fecha_adquisicion.data
+        item.user_id = current_user.id  # Actualiza el ID del usuario actual
         db.session.commit()
         return redirect(url_for('listar_inventario'))
     
     return render_template('editar_inventario.html', form=form, item=item)
 
+
 @app.route('/inventario_eliminar/<int:id>', methods=['POST'])
+@login_required
 def eliminar_inventario(id):
-    print(request.form)  # Imprime los datos del formulario para depuración
     item = Inventario.query.get_or_404(id)
     db.session.delete(item)
     db.session.commit()
