@@ -260,20 +260,6 @@ def registrar_reproduccion():
         db.session.commit()
         flash('Registro de reproducción creado exitosamente!', 'success')
         return redirect(url_for('listar_reproduccion'))
-#----------------------------------------------------------------id hembras ovejas---------------------{-}
-#     try:
-#         hembras = Oveja.query.filter_by(sexo='Hembra').all()
-#         if not hembras:
-#             print("No se encontraron hembras en la base de datos.")
-#     except Exception as e:
-#         print(f"Error al obtener hembras: {e}")
-# #-------------------------------------------------------------------id de los machos---------------------
-#     try:
-#         macho = Oveja.query.filter_by(sexo='Macho').all()
-#         if not hembras:
-#             print("No se encontraron machos en la base de datos.")
-#     except Exception as e:
-#         print(f"Error al obtener hembras: {e}")
 
     return render_template('registrar_reproduccion.html', form=form, oveja=hembras, ovejas=macho)
 #-----------------------------------------------------------------------------------------------------------termina--------
@@ -281,8 +267,22 @@ def registrar_reproduccion():
 @app.route('/listar_reproduccion')
 @login_required
 def listar_reproduccion():
-    reproducciones = Reproduccion.query.filter_by(user_id=current_user.id).all()
+    search_query = request.args.get('search', '')  # Obtener el término de búsqueda desde la solicitud
+    # Filtrar las reproducciones según el término de búsqueda
+    if search_query:
+        # Buscar por id_oveja, id_macho, o cualquier otro campo que desees
+        reproducciones = Reproduccion.query.filter(
+            (Reproduccion.id_oveja.contains(search_query)) |
+            (Reproduccion.id_macho.contains(search_query)) |
+            (Reproduccion.fecha_apareamiento.contains(search_query)) |
+            (Reproduccion.fecha_parto.contains(search_query))
+        ).filter_by(user_id=current_user.id).all()
+    else:
+        # Si no hay búsqueda, muestra todas las reproducciones
+        reproducciones = Reproduccion.query.filter_by(user_id=current_user.id).all()
+
     return render_template('listar_reproduccion.html', reproducciones=reproducciones)
+
 
 @app.route('/editar_reproduccion/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -435,10 +435,6 @@ def registrar_venta():
         )
         db.session.add(nueva_venta)
         db.session.commit()
-
-        flash('venta registrada!', 'success')
-        return redirect(url_for('listar_ventas'))
-
         # Crear una nueva transacción en Finanzas
         nueva_finanza = Finanzas(
             tipo="Venta",
@@ -452,13 +448,25 @@ def registrar_venta():
 
         flash('Venta registrada exitosamente!', 'success')
         return redirect(url_for('listar_venta'))
-
     return render_template('registrar_venta.html', form=form)
 
-@app.route('/listar_ventas')
+@app.route('/listar_ventas', methods=['GET'])
 @login_required
 def listar_venta():
-    ventas = Venta.query.filter_by(user_id=current_user.id).all()
+    # Obtiene el término de búsqueda desde la solicitud
+    search_query = request.args.get('search', '')
+
+    # Filtrar las ventas según el término de búsqueda
+    if search_query:
+        ventas = Venta.query.filter(
+            (Venta.id.like(f'%{search_query}%')) |
+            (Venta.id_oveja.like(f'%{search_query}%')) |
+            (Venta.precio.like(f'%{search_query}%'))  # Puedes agregar otros campos si es necesario
+        ).filter_by(user_id=current_user.id).all()
+    else:
+        # Si no hay término de búsqueda, muestra todas las ventas
+        ventas = Venta.query.filter_by(user_id=current_user.id).all()
+
     return render_template('listar_ventas.html', ventas=ventas)
 
 @app.route('/editar_venta/<int:id>', methods=['GET', 'POST'])
@@ -472,11 +480,6 @@ def editar_venta(id):
         venta.cantidad = form.cantidad.data
         venta.precio = form.precio.data
         db.session.commit()
-
-
-        flash('venta editada!', 'success')
-        return redirect(url_for('listar_ventas'))
-
         # Actualizar la entrada correspondiente en Finanzas
         finanza = Finanzas.query.filter_by(descripcion=f'Venta de oveja {id}', user_id=current_user.id).first_or_404()
         finanza.monto = form.cantidad.data * form.precio.data
@@ -486,7 +489,6 @@ def editar_venta(id):
 
         flash('Venta actualizada con éxito', 'success')
         return redirect(url_for('listar_venta'))
-
     return render_template('editar_venta.html', form=form)
 
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
@@ -495,8 +497,6 @@ def eliminar_venta(id):
     venta = Venta.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(venta)
     db.session.commit()
-
-
     # Eliminar la entrada correspondiente en Finanzas
     finanza = Finanzas.query.filter_by(descripcion=f'Venta de oveja {id}', user_id=current_user.id).first_or_404()
     db.session.delete(finanza)
@@ -522,18 +522,6 @@ def registrar_compra():
             cantidad=form.cantidad.data,
             precio=form.precio.data,
             fecha=form.fecha.data,
-
-            user_id=current_user.id  # Asignar el user_id del usuario actual
-
-        )
-        db.session.add(nueva_compra)
-        db.session.commit()
-
-        flash('compra registrada!', 'success')
-        return redirect(url_for('listar_compra'))
-     # Asegúrate de que la ruta listar_compras esté definida
-
-
             user_id=current_user.id
         )
         db.session.add(nueva_compra)
@@ -550,7 +538,6 @@ def registrar_compra():
         db.session.commit()
         flash('Compra registrada exitosamente!', 'success')
         return redirect(url_for('listar_compra'))
-
     return render_template('registrar_compra.html', form=form)
 
 @app.route('/listar_compras')
@@ -577,15 +564,8 @@ def editar_compra(id):
         finanza.fecha = form.fecha.data
         finanza.descripcion = f'Compra de {compra.descripcion}'
         db.session.commit()
-
-
         flash('compra editada!', 'success')
         return redirect(url_for('listar_compra'))
-
-
-        flash('Compra actualizada con éxito', 'success')
-        return redirect(url_for('listar_compra'))
-
     return render_template('editar_compra.html', form=form)
 
 @app.route('/eliminar_compra/<int:id>', methods=['POST'])
@@ -598,21 +578,11 @@ def eliminar_compra(id):
     # Eliminar la compra
     db.session.delete(compra)
     db.session.commit()
-
-
     flash('compra eliminada !', 'success')
     return redirect(url_for('compra'))
 #--------------------------------------------------finaliza compra---------------------------------------
 
 #-----------------------------------------------------finanzas-------------------------------------
-
-
-
-
-    flash('Compra eliminada correctamente', 'success')
-    return redirect(url_for('listar_compra'))
-
-
 @app.route('/listar_finanzas')
 @login_required
 def listar_finanzas():
@@ -643,14 +613,29 @@ def informe_mensual():
     ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
 
     return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
-
-@app.route('/listar_inventario', methods=['GET'])
-def listar_inventario():
-    inventario = Inventario.query.all()
-    return render_template('listar_inventario.html', inventario=inventario)
 #-----------------------------------------------------------------------------inventario---------------------
+@app.route('/listar_inventario', methods=['GET'])
+@login_required
+def listar_inventario():
+    # Captura el término de búsqueda de los parámetros de la URL
+    search_query = request.args.get('search', '')
+    print(f"buscar {search_query}")
+    # Filtra los elementos de inventario según el término de búsqueda
+    if search_query:
+        print("entra al if")
+        inventario_items = Inventario.query.filter(
+            (Inventario.descripcion.like(f'%{search_query}%')) |
+            (Inventario.cantidad.like(f'%{search_query}%'))
+        ).all()
+        print(f"Finaliza el if {inventario_items}")
+    else:
+        # Si no hay término de búsqueda, muestra todos los elementos de inventario
+        inventario_items = Inventario.query.filter_by(user_id=current_user.id).all()
+
+    return render_template('listar_inventario.html', inventario=inventario_items)
 
 @app.route('/inventario_nuevo', methods=['GET', 'POST'])
+@login_required
 def insertar_inventario():
     form = InventarioForm()
     if form.validate_on_submit():
@@ -658,7 +643,8 @@ def insertar_inventario():
             tipo=form.tipo.data,
             descripcion=form.descripcion.data,
             cantidad=form.cantidad.data,
-            fecha_adquisicion=form.fecha_adquisicion.data
+            fecha_adquisicion=form.fecha_adquisicion.data,
+            user_id=current_user.id  # Asigna el ID del usuario actual
         )
         db.session.add(nuevo_item)
         db.session.commit()
@@ -667,24 +653,27 @@ def insertar_inventario():
     return render_template('insertar_inventario.html', form=form)
 
 @app.route('/inventario_editar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_inventario(id):
     item = Inventario.query.get_or_404(id)
-    form = InventarioForm(obj=item)
+    form = InventarioForm(obj=item) 
     
     if form.validate_on_submit():
         item.tipo = form.tipo.data
         item.descripcion = form.descripcion.data
         item.cantidad = form.cantidad.data
         item.fecha_adquisicion = form.fecha_adquisicion.data
+        item.user_id = current_user.id  # Actualiza el ID del usuario actual
         db.session.commit()
         flash('producto actualizado correctamente','success')
         return redirect(url_for('listar_inventario'))
     
     return render_template('editar_inventario.html', form=form, item=item)
 
+
 @app.route('/inventario_eliminar/<int:id>', methods=['POST'])
+@login_required
 def eliminar_inventario(id):
-    print(request.form)  # Imprime los datos del formulario para depuración
     item = Inventario.query.get_or_404(id)
     db.session.delete(item)
     db.session.commit()
@@ -695,47 +684,32 @@ def eliminar_inventario(id):
 # index vacios------------------------------------------------------------------------------------------------------
 
 @app.route('/oveja')
-def oveja():
- 
-    
+def oveja(): 
     return render_template('ovejas.html',)
 
 
 @app.route('/salud')
 @login_required
 def salud():
-  
-
     return render_template('salud.html')
 
 @app.route('/reproduccion')
 @login_required
 def reproduccion():
-    
-
     return render_template('reproduccion.html')
 
 @app.route('/alimentacion')
 @login_required
 def alimentacion():
-    
-
-
     return render_template('alimentacion.html')
 
 
 @app.route('/venta')
 def venta():
-   
-
-
     return render_template('venta.html')
 
 @app.route('/compra')
 def compra():
-
-
-
     return render_template('compra.html')
 
 

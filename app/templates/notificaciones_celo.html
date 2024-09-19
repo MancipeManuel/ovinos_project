@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones de Celo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Notificaciones de Celo</h2>
+
+        {% if notificaciones %}
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID Oveja</th>
+                    <th>Nombre</th>
+                    <th>Mensaje</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notificacion in notificaciones %}
+                <tr>
+                    <td>{{ notificacion.oveja_id }}</td>
+                    <td>{{ notificacion.nombre }}</td>
+                    <td>{{ notificacion.mensaje_celo }}</td>
+                    <td>
+                        <!-- Aquí podrías agregar botones de acción -->
+                        <a href="/editar_oveja/{{ notificacion.oveja_id }}">Editar</a> |
+                        <a href="/eliminar_oveja/{{ notificacion.oveja_id }}" onclick="return confirm('¿Estás seguro de eliminar esta oveja?');">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No hay notificaciones de celo disponibles.</p>
+        {% endif %}
+
+        <a href="{{ url_for('index') }}">Volver al Inicio</a>
+    </div>
+</body>
+</html>

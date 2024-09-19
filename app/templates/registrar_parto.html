@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Registrar Parto</h2>
+  <form method="POST" action="{{ url_for('registrar_parto') }}">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+          {{ form.id_oveja.label }}<br>
+          {{ form.id_oveja(class="form-control") }}
+      </div>
+      <div class="form-group">
+          {{ form.fecha_parto.label }}<br>
+          {{ form.fecha_parto(class="form-control") }}
+      </div>
+      <div class="form-group">
+          {{ form.num_crias.label }}<br>
+          {{ form.num_crias(class="form-control") }}
+      </div>
+      <div class="form-group">
+          {{ form.observaciones.label }}<br>
+          {{ form.observaciones(class="form-control") }}
+      </div>
+      <div class="form-group">
+          {{ form.submit(class="btn btn-primary") }}
+      </div>
+  </form>
+{% endblock %}
+
+

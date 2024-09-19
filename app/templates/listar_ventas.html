@@ -7,14 +7,19 @@
 </head>
 <body>
     <div class="navbar">
+        <div>
+            <a href="{{ url_for('logout') }}" class="btn-close">Salir</a>
+        </div>
         <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{ url_for('oveja') }}">Ovejas</a>
+        <a href="{{ url_for('salud') }}">Salud</a>
+        <a href="{{ url_for('reproduccion') }}">Reproducción</a>
+        <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+        <a href="{{ url_for('finanzas') }}">Finanzas</a>
+        <a href="{{ url_for('venta') }}">Ventas</a>
+        <a href="{{ url_for('compra') }}">Compras</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
     </div>
 </br></br></br>
 <!-- Mostrar mensajes flash -->
@@ -31,47 +36,53 @@
       {% endif %}
     {% endwith %}
 </div>
-    <div>
-    <div class="container">
-        {% block content %}{% endblock %}               
+
+    <div class="sidebar">
+        <a href="{{ url_for('listar_inventario') }}">listar inventario</a>
+        <a href="{{ url_for('insertar_inventario') }}">Agregar inventario</a>
     </div>
+    
+>>>>>>> aleja
+    <div class="container">
+        <h1>Listado de Ventas</h1>
+        <!-- Formulario de búsqueda -->
+        <form method="GET" action="{{ url_for('listar_venta') }}"class="search-bar">
+            <input type="text" name="search" placeholder="Buscar ventas..." value="{{ request.args.get('search', '') }}">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>ID Oveja</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.id }}</td>
+                    <td>{{ venta.fecha.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ venta.id_oveja }}</td>
+                    <td>{{ venta.precio }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_venta', id=venta.id) }}" class='btn'>Editar</a>
+                        <form action="{{ url_for('eliminar_venta', id=venta.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta venta?');">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
-    <div class="sidebar">
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{url_for('listar_venta')}}">Listar ventas</a></li>
-        <a href="{{url_for('registrar_venta')}}">registrar ventas</a></li>
-    </div>
-    <h1>Listado de Ventas</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>ID Oveja</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for venta in ventas %}
-            <tr>
-                <td>{{ venta.id }}</td>
-                <td>{{ venta.fecha.strftime('%Y-%m-%d') }}</td>
-                <td>{{ venta.id_oveja }}</td>
-                <td>{{ venta.precio }}</td>
-                <td>
-                    <a href="{{ url_for('editar_venta', id=venta.id) }}"class='btn'>Editar</a>
-                    <form action="{{ url_for('eliminar_venta', id=venta.id) }}" method="POST" style="display:inline;">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta venta?');">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br>
 </body>
 </html>

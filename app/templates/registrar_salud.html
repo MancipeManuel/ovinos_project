@@ -7,6 +7,9 @@
 </head>
 <body>
     <div class="navbar">
+        <div>
+            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
+            </div>
         <a href="{{ url_for('index') }}">Inicio</a>
         <a href="{{ url_for('oveja') }}"> ovejas  </a>
         <a href="{{ url_for('salud') }}">salud</a>
@@ -15,6 +18,8 @@
         <a href="{{url_for('finanzas')}}">finanzas</a></li>
         <a href="{{url_for('venta')}}">ventas</a></li>
         <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{url_for('inventario')}}">inventario</a>
+        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
     </div>
     <div class="container">
         {% block content %}{% endblock %}
@@ -22,13 +27,9 @@
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>
+    
 
     <div class="sidebar">
-
-        <h1>Registrar salud</h1>
-
-        <a href="{{ url_for('index') }}">Inicio</a>
-
         <a href="{{url_for('registrar_salud')}}">Registrar Salud</a></li>
         <a href="{{url_for('listar_salud')}}">Listar Salud</a></li>
     </div>
@@ -39,6 +40,8 @@
     <form method="POST" action="{{ url_for('registrar_salud') }}">
         {{ form.hidden_tag() }}
         <div>
+            
+        <h1>Registrar salud</h1>
             {{ form.id_oveja.label }}<br>
             {{ form.id_oveja() }}<br>
             {% for error in form.id_oveja.errors %}

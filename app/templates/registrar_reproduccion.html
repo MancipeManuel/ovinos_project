@@ -36,6 +36,9 @@
 </head>
 <body>
     <div class="navbar">
+        <div>
+            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
+            </div>
         <a href="{{ url_for('index') }}">Inicio</a>
         <a href="{{ url_for('oveja') }}"> ovejas  </a>
         <a href="{{ url_for('salud') }}">salud</a>
@@ -44,6 +47,8 @@
         <a href="{{url_for('finanzas')}}">finanzas</a></li>
         <a href="{{url_for('venta')}}">ventas</a></li>
         <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{url_for('inventario')}}">inventario</a>
+        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
     </div>
     <!-- Mostrar mensajes flash -->
     <div class="container">
@@ -62,16 +67,19 @@
     <div class="container">
         {% block content %}{% endblock %}
     </div>
-
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
+    
+>>>>>>> aleja
     <div class="sidebar">
-    <a href="{{ url_for('index') }}">Inicio</a>
     <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
     <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
     </div>
-    <h1>Registrar Reproducción</h1>
     <form method="POST">
         {{ form.hidden_tag() }}
         <p>
+            <h1>Registrar Reproducción</h1>
             {{ form.id_oveja.label }}<br>
             <select name="id_oveja" id="id_oveja">
                 {% for hembra in oveja %}
