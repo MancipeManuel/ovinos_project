@@ -62,9 +62,7 @@
     <div class="container">
         {% block content %}{% endblock %}
     </div>
-    <footer>
-        &copy; 2024 Gestión de Ovinos
-    </footer>
+
     <div class="sidebar">
     <a href="{{ url_for('index') }}">Inicio</a>
     <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
@@ -75,11 +73,13 @@
         {{ form.hidden_tag() }}
         <p>
             {{ form.id_oveja.label }}<br>
-            {{ form.id_oveja(size=32) }}<br>
-            {% for error in form.id_oveja.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
+            <select name="id_oveja" id="id_oveja">
+                {% for hembra in oveja %}
+                    <option value="{{ hembra.id }}">{{ hembra.nombre }}</option> 
+                {% else %}
+                    <option>No se encontraron hembras</option>  
+                {% endfor %}
+            </select>
         <p>
             {{ form.fecha_apareamiento.label }}<br>
             {{ form.fecha_apareamiento(size=32, id='fecha_apareamiento', oninput='calcularFechaParto()') }}<br>
@@ -89,10 +89,14 @@
         </p>
         <p>
             {{ form.id_macho.label }}<br>
-            {{ form.id_macho(size=32) }}<br>
-            {% for error in form.id_macho.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+            <select name="id_macho" id="id_macho">
+                {% for macho in ovejas %}
+                    <option value="{{ macho.id }}">{{ macho.nombre }}</option> 
+                {% else %}
+                    <option>No se encontraron machos</option>  
+                {% endfor %}
+            </select>
+            
         </p>
         <p>
             {{ form.fecha_parto.label }}<br>

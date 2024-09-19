@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, session
+from flask import render_template, redirect, url_for, session, Response
 from app import app, db
 from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, VentaForm, CompraForm 
 from app.models import Oveja, Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas
@@ -217,6 +217,14 @@ def eliminar_oveja(id):
 @login_required
 def registrar_reproduccion():
     form = ReproduccionForm()
+
+    # Cargar las ovejas (hembras) y machos desde la base de datos
+    hembras = Oveja.query.filter_by(sexo='Hembra').all()
+    macho = Oveja.query.filter_by(sexo='Macho').all()
+
+    form.id_oveja.choices = [(hembra.id, hembra.nombre) for hembra in hembras]
+    form.id_macho.choices = [(macho.id, macho.nombre) for macho in macho]
+
     if form.validate_on_submit():
         nueva_reproduccion = Reproduccion(
             id_oveja=form.id_oveja.data,
@@ -228,9 +236,25 @@ def registrar_reproduccion():
         )
         db.session.add(nueva_reproduccion)
         db.session.commit()
-        flash('registro nuevo de reproduccion registrado!', 'success')
+        flash('Registro de reproducción creado exitosamente!', 'success')
         return redirect(url_for('listar_reproduccion'))
-    return render_template('registrar_reproduccion.html', form=form)
+#----------------------------------------------------------------id hembras ovejas---------------------{-}
+#     try:
+#         hembras = Oveja.query.filter_by(sexo='Hembra').all()
+#         if not hembras:
+#             print("No se encontraron hembras en la base de datos.")
+#     except Exception as e:
+#         print(f"Error al obtener hembras: {e}")
+# #-------------------------------------------------------------------id de los machos---------------------
+#     try:
+#         macho = Oveja.query.filter_by(sexo='Macho').all()
+#         if not hembras:
+#             print("No se encontraron machos en la base de datos.")
+#     except Exception as e:
+#         print(f"Error al obtener hembras: {e}")
+
+    return render_template('registrar_reproduccion.html', form=form, oveja=hembras, ovejas=macho)
+#-----------------------------------------------------------------------------------------------------------termina--------
 
 @app.route('/listar_reproduccion')
 @login_required
@@ -631,13 +655,10 @@ def catalogo():
 @app.route('/recetas')
 def recetas():
     return render_template('recetas.html')
-#-------------------------------------------------funcion para mostrar las ovejas hembras-------------------
-# @app.route('/hembras')
-# def listar_reproduccion():
-#     reproducciones = Reproduccion.query.filter_by(user_id=current_user.id).all()
-#     return render_template('listar_reproduccion.html', reproducciones=reproducciones)
 
- 
+
+
+
  
 
 
