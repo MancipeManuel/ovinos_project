@@ -7,30 +7,51 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <br>
+    <style>.alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+    
+    .alert-success {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #d6e9c6;
+    }
+    
+    .alert-danger {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+    }
+    </style>
     <div class="navbar">
         <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
+        <a href="{{ url_for('oveja') }}">Ovejas</a>
+        <a href="{{ url_for('salud') }}">Salud</a>
+        <a href="{{ url_for('reproduccion') }}">Reproducción</a>
+        <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+        <a href="{{ url_for('finanzas') }}">Finanzas</a>
+        <a href="{{ url_for('venta') }}">Ventas</a>
+        <a href="{{ url_for('compra') }}">Compras</a>
     </div>
+
+    <!-- Mostrar mensajes flash -->
     <div class="container">
-        {% block content %}{% endblock %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flashes">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
     </div>
-    <footer>
-        &copy; 2024 Gestión de Ovinos
-    </footer>
-    <div class="sidebar">
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('listar_ovejas') }}">listar Ovejas</a>
-        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
-        
-    </div>
+
     <h1>Listado de Ovejas</h1>
     <table>
         <thead>
@@ -55,14 +76,19 @@
                 <td>{{ oveja.id_padre }}</td>
                 <td>{{ oveja.id_madre }}</td>
                 <td>
-                    <a href="{{ url_for('editar_oveja', id=oveja.id) }}"class='btn'>Editar</a>
+                    <a href="{{ url_for('editar_oveja', id=oveja.id) }}" class="btn">Editar</a>
                     <form action="{{ url_for('eliminar_oveja', id=oveja.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta oveja?');">Eliminar</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <footer>
+        &copy; 2024 Gestión de Ovinos
+    </footer>
 </body>
 </html>
