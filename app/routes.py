@@ -204,10 +204,32 @@ def editar_oveja(id):
 @app.route('/eliminar_oveja/<int:id>', methods=['POST'])
 @login_required
 def eliminar_oveja(id):
+
     oveja = Oveja.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(oveja)
     db.session.commit()
     flash('oveja eliminada!', 'success')
+
+    oveja = Oveja.query.get_or_404(id)
+    try:
+        # Eliminar referencias de la oveja como padre o madre en otras ovejas
+        for hijo in oveja.hijos_padre:
+            hijo.id_padre = None
+        for hijo in oveja.hijos_madre:
+            hijo.id_madre = None
+
+        # Finalmente, eliminar la oveja
+        db.session.delete(oveja)
+
+        # Guardar los cambios en la base de datos
+        db.session.commit()
+        flash('Oveja eliminada correctamente', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar la oveja: {str(e)}', 'danger')
+
+
     return redirect(url_for('listar_ovejas'))
 #-----------------------------------------------------------------aqui termina-------------------------
 
@@ -398,6 +420,7 @@ def eliminar_alimentacion(id):
 
 #---------------------------------------------------------------ventas-------------------------------
 
+#--
 @app.route('/registrar_venta', methods=['GET', 'POST'])
 @login_required
 def registrar_venta():
@@ -408,12 +431,28 @@ def registrar_venta():
             fecha=form.fecha.data,
             cantidad=form.cantidad.data,
             precio=form.precio.data,
-            user_id=current_user.id  # Asignar el user_id del usuario actual
+            user_id=current_user.id
         )
         db.session.add(nueva_venta)
         db.session.commit()
+
         flash('venta registrada!', 'success')
         return redirect(url_for('listar_ventas'))
+
+        # Crear una nueva transacción en Finanzas
+        nueva_finanza = Finanzas(
+            tipo="Venta",
+            descripcion=f'Venta de oveja {form.id_oveja.data}',
+            monto=form.cantidad.data * form.precio.data,
+            fecha=form.fecha.data,
+            user_id=current_user.id
+        )
+        db.session.add(nueva_finanza)
+        db.session.commit()
+
+        flash('Venta registrada exitosamente!', 'success')
+        return redirect(url_for('listar_venta'))
+
     return render_template('registrar_venta.html', form=form)
 
 @app.route('/listar_ventas')
@@ -434,8 +473,20 @@ def editar_venta(id):
         venta.precio = form.precio.data
         db.session.commit()
 
+
         flash('venta editada!', 'success')
         return redirect(url_for('listar_ventas'))
+
+        # Actualizar la entrada correspondiente en Finanzas
+        finanza = Finanzas.query.filter_by(descripcion=f'Venta de oveja {id}', user_id=current_user.id).first_or_404()
+        finanza.monto = form.cantidad.data * form.precio.data
+        finanza.fecha = form.fecha.data
+        finanza.descripcion = f'Venta de oveja {venta.id_oveja}'
+        db.session.commit()
+
+        flash('Venta actualizada con éxito', 'success')
+        return redirect(url_for('listar_venta'))
+
     return render_template('editar_venta.html', form=form)
 
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
@@ -445,8 +496,16 @@ def eliminar_venta(id):
     db.session.delete(venta)
     db.session.commit()
 
-    flash('venta eliminada!', 'success')
-    return redirect(url_for('listar_ventas'))   
+
+    # Eliminar la entrada correspondiente en Finanzas
+    finanza = Finanzas.query.filter_by(descripcion=f'Venta de oveja {id}', user_id=current_user.id).first_or_404()
+    db.session.delete(finanza)
+    db.session.commit()
+    flash('Venta eliminada correctamente', 'success')
+    return redirect(url_for('listar_venta'))
+
+
+  
 #-----------------------------------------------------------------termina venta-----------------------------
 
    
@@ -463,6 +522,7 @@ def registrar_compra():
             cantidad=form.cantidad.data,
             precio=form.precio.data,
             fecha=form.fecha.data,
+
             user_id=current_user.id  # Asignar el user_id del usuario actual
 
         )
@@ -472,6 +532,24 @@ def registrar_compra():
         flash('compra registrada!', 'success')
         return redirect(url_for('listar_compra'))
      # Asegúrate de que la ruta listar_compras esté definida
+
+
+            user_id=current_user.id
+        )
+        db.session.add(nueva_compra)
+        db.session.commit()
+        # Crear una nueva transacción en Finanzas
+        nueva_finanza = Finanzas(
+            tipo="Compra",
+            descripcion=f'Compra de {form.descripcion.data}',
+            monto=form.cantidad.data * form.precio.data,
+            fecha=form.fecha.data,
+            user_id=current_user.id
+        )
+        db.session.add(nueva_finanza)
+        db.session.commit()
+        flash('Compra registrada exitosamente!', 'success')
+        return redirect(url_for('listar_compra'))
 
     return render_template('registrar_compra.html', form=form)
 
@@ -487,13 +565,25 @@ def editar_compra(id):
     compra = Compra.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = CompraForm(obj=compra)
     if form.validate_on_submit():
-        compra.fecha = form.fecha.data
-        compra.proveedor = form.proveedor.data
+        compra.tipo_producto = form.tipo_producto.data
+        compra.descripcion = form.descripcion.data
         compra.cantidad = form.cantidad.data
         compra.precio = form.precio.data
+        compra.fecha = form.fecha.data
+        db.session.commit()
+        # Actualizar la entrada correspondiente en Finanzas
+        finanza = Finanzas.query.filter_by(descripcion=f'Compra de {id}', user_id=current_user.id).first_or_404()
+        finanza.monto = form.cantidad.data * form.precio.data
+        finanza.fecha = form.fecha.data
+        finanza.descripcion = f'Compra de {compra.descripcion}'
         db.session.commit()
 
+
         flash('compra editada!', 'success')
+        return redirect(url_for('listar_compra'))
+
+
+        flash('Compra actualizada con éxito', 'success')
         return redirect(url_for('listar_compra'))
 
     return render_template('editar_compra.html', form=form)
@@ -502,8 +592,13 @@ def editar_compra(id):
 @login_required
 def eliminar_compra(id):
     compra = Compra.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    finanza = Finanzas.query.filter_by(descripcion=f'Compra de {compra.descripcion}', user_id=current_user.id).first()
+    if finanza:
+        db.session.delete(finanza)
+    # Eliminar la compra
     db.session.delete(compra)
     db.session.commit()
+
 
     flash('compra eliminada !', 'success')
     return redirect(url_for('compra'))
@@ -512,6 +607,10 @@ def eliminar_compra(id):
 #-----------------------------------------------------finanzas-------------------------------------
 
 
+
+
+    flash('Compra eliminada correctamente', 'success')
+    return redirect(url_for('listar_compra'))
 
 
 @app.route('/listar_finanzas')

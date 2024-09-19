@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
+    
 class Oveja(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
@@ -26,9 +26,16 @@ class Oveja(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
+
     padre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_padre], backref='hijos_padre', uselist=False)
     madre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_madre], backref='hijos_madre', uselist=False)
+
+    padre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_padre], backref=db.backref('hijos_padre', uselist=True, cascade="all, delete-orphan"), uselist=False)
+    madre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_madre], backref=db.backref('hijos_madre', uselist=True, cascade="all, delete-orphan"), uselist=False)
+
     user = db.relationship('User', backref='ovejas')
+    def __repr__(self):
+        return f'<Oveja {self.nombre}>'
 
     def _repr_(self):
         return f'<Oveja {self.nombre}>'
