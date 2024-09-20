@@ -31,13 +31,6 @@
             <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
             </div>
         <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}">Ovejas</a>
-        <a href="{{ url_for('salud') }}">Salud</a>
-        <a href="{{ url_for('reproduccion') }}">Reproducción</a>
-        <a href="{{ url_for('alimentacion') }}">Alimentación</a>
-        <a href="{{ url_for('finanzas') }}">Finanzas</a>
-        <a href="{{ url_for('venta') }}">Ventas</a>
-        <a href="{{ url_for('compra') }}">Compras</a>
         <a href="{{ url_for('oveja') }}"> ovejas  </a>
         <a href="{{ url_for('salud') }}">salud</a>
         <a href="{{url_for('reproduccion')}}"> reproduccion</a>
@@ -64,25 +57,6 @@
       {% endif %}
     {% endwith %}
 </div>
-    
-
-
-    <!-- Mostrar mensajes flash -->
-
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="flashes">
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                  {{ message }}
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </div>
     <footer>
         &copy; 2024 Gestión de Ovinos
     </footer>

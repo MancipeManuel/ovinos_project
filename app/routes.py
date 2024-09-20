@@ -204,32 +204,21 @@ def editar_oveja(id):
 @app.route('/eliminar_oveja/<int:id>', methods=['POST'])
 @login_required
 def eliminar_oveja(id):
-
     oveja = Oveja.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    db.session.delete(oveja)
-    db.session.commit()
-    flash('oveja eliminada!', 'success')
-
-    oveja = Oveja.query.get_or_404(id)
     try:
         # Eliminar referencias de la oveja como padre o madre en otras ovejas
         for hijo in oveja.hijos_padre:
             hijo.id_padre = None
         for hijo in oveja.hijos_madre:
             hijo.id_madre = None
-
         # Finalmente, eliminar la oveja
         db.session.delete(oveja)
-
-        # Guardar los cambios en la base de datos
         db.session.commit()
         flash('Oveja eliminada correctamente', 'success')
-
     except Exception as e:
         db.session.rollback()
         flash(f'Error al eliminar la oveja: {str(e)}', 'danger')
-
-
+    
     return redirect(url_for('listar_ovejas'))
 #-----------------------------------------------------------------aqui termina-------------------------
 
@@ -241,8 +230,8 @@ def registrar_reproduccion():
     form = ReproduccionForm()
 
     # Cargar las ovejas (hembras) y machos desde la base de datos
-    hembras = Oveja.query.filter_by(sexo='Hembra').all()
-    macho = Oveja.query.filter_by(sexo='Macho').all()
+    hembras = Oveja.query.filter_by(sexo='Hembra',user_id=current_user.id).all()
+    macho = Oveja.query.filter_by(sexo='Macho',user_id=current_user.id).all()
 
     form.id_oveja.choices = [(hembra.id, hembra.nombre) for hembra in hembras]
     form.id_macho.choices = [(macho.id, macho.nombre) for macho in macho]
@@ -480,7 +469,7 @@ def editar_venta(id):
         venta.cantidad = form.cantidad.data
         venta.precio = form.precio.data
         db.session.commit()
-        # Actualizar la entrada correspondiente en Finanzas
+
         finanza = Finanzas.query.filter_by(descripcion=f'Venta de oveja {id}', user_id=current_user.id).first_or_404()
         finanza.monto = form.cantidad.data * form.precio.data
         finanza.fecha = form.fecha.data
@@ -489,7 +478,9 @@ def editar_venta(id):
 
         flash('Venta actualizada con éxito', 'success')
         return redirect(url_for('listar_venta'))
-    return render_template('editar_venta.html', form=form)
+
+    return render_template('editar_venta.html', form=form, venta=venta)
+
 
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
 @login_required
