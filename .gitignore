@@ -1,0 +1,11 @@
+# Ignorar carpetas específicas
+/venv/         # Ignorar el entorno virtual en Python
+/node_modules/  # Ignorar las dependencias de Node.js
+
+# Ignorar archivos de configuración o compilación
+*.log          # Ignorar todos los archivos .log
+*.pyc          # Ignorar todos los archivos .pyc de Python
+*.class        # Ignorar todos los archivos .class de Java
+
+# Ignorar archivos sensibles
+.env           # Ignorar archivos de entorno (credenciales y variables)
