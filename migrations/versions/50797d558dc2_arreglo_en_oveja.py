@@ -1,16 +1,16 @@
-"""Ajustar relaciones para eliminar dependencia circular
+"""arreglo en oveja
 
-Revision ID: 74aaf892465c
+Revision ID: 50797d558dc2
 Revises: 
-Create Date: 2024-09-12 14:45:57.461714
+Create Date: 2024-09-21 19:47:49.908788
 
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
+
 
 # revision identifiers, used by Alembic.
-revision = '74aaf892465c'
+revision = '50797d558dc2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -63,7 +63,7 @@ def upgrade():
     sa.Column('nombre', sa.String(length=100), nullable=False),
     sa.Column('fecha_nacimiento', sa.Date(), nullable=False),
     sa.Column('raza', sa.String(length=50), nullable=False),
-    sa.Column('sexo', postgresql.ENUM('Macho', 'Hembra', name='sexo_enum'), nullable=False),
+    sa.Column('sexo', sa.Enum('Macho', 'Hembra', name='sexo_enum'), nullable=False),
     sa.Column('id_padre', sa.Integer(), nullable=True),
     sa.Column('id_madre', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=False),

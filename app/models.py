@@ -20,26 +20,18 @@ class Oveja(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     fecha_nacimiento = db.Column(db.Date, nullable=False)
     raza = db.Column(db.String(50), nullable=False)
-    sexo = db.Column(ENUM('Macho', 'Hembra', name='sexo_enum'), nullable=False)
+    sexo = db.Column(db.Enum('Macho', 'Hembra', name='sexo_enum'), nullable=False)
     id_padre = db.Column(db.Integer, db.ForeignKey('oveja.id'), nullable=True)
     id_madre = db.Column(db.Integer, db.ForeignKey('oveja.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-
-
-    padre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_padre], backref='hijos_padre', uselist=False)
-    madre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_madre], backref='hijos_madre', uselist=False)
-
-    padre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_padre], backref=db.backref('hijos_padre', uselist=True, cascade="all, delete-orphan"), uselist=False)
-    madre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_madre], backref=db.backref('hijos_madre', uselist=True, cascade="all, delete-orphan"), uselist=False)
+    padre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_padre], backref=db.backref('hijos_padre', uselist=True))
+    madre = db.relationship('Oveja', remote_side=[id], foreign_keys=[id_madre], backref=db.backref('hijos_madre', uselist=True))
 
     user = db.relationship('User', backref='ovejas')
+
     def __repr__(self):
         return f'<Oveja {self.nombre}>'
-
-    def _repr_(self):
-        return f'<Oveja {self.nombre}>'
-
 
 class Salud(db.Model):
     id = db.Column(db.Integer, primary_key=True)

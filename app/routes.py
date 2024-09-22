@@ -163,25 +163,28 @@ def listar_ovejas():
 @login_required
 def registrar_oveja():
     form = OvejaForm()
+    # Cargar todas las ovejas existentes para seleccionar padre y madre    
+    machos = Oveja.query.filter_by(sexo='Macho',user_id=current_user.id).all()
+    hembras = Oveja.query.filter_by(sexo='Hembra',user_id=current_user.id).all()
+    # Agregar las opciones de ovejas machos al SelectField del padre
+    form.id_padre.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in machos]
+    # Agregar las opciones de ovejas hembras al SelectField de la madre
+    form.id_madre.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in hembras]
     if form.validate_on_submit():
         nueva_oveja = Oveja(
             nombre=form.nombre.data,
             fecha_nacimiento=form.fecha_nacimiento.data,
             raza=form.raza.data,
             sexo=form.sexo.data,
-            id_padre=form.id_padre.data if form.id_padre.data else None,
-            id_madre=form.id_madre.data if form.id_madre.data else None,
-
-
-            user_id=current_user.id  # Asignar el user_id del usuario actual
-
+            id_padre=form.id_padre.data if form.id_padre.data != 0 else None,  # Verificar si seleccionó "Ninguno"
+            id_madre=form.id_madre.data if form.id_madre.data != 0 else None,  # Verificar si seleccionó "Ninguno"
+            user_id=current_user.id  # Asignar el user_id del usuario actual   
         )
         db.session.add(nueva_oveja)
         db.session.commit()
-        flash('oveja registrada ', 'success')
+        flash('Oveja registrada correctamente', 'success')
         return redirect(url_for('listar_ovejas'))
     return render_template('registro_oveja.html', form=form)
-
 
 @app.route('/editar_oveja/<int:id>', methods=['GET', 'POST'])
 @login_required
