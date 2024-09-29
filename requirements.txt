@@ -2,5 +2,8 @@ Flask
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-WTF
-
-
+flask_login
+pandas
+fpdf
+openpyxl
+email_validator
