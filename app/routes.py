@@ -233,19 +233,22 @@ def registrar_reproduccion():
     form = ReproduccionForm()
 
     # Cargar las ovejas (hembras) y machos desde la base de datos
-    hembras = Oveja.query.filter_by(sexo='Hembra',user_id=current_user.id).all()
-    macho = Oveja.query.filter_by(sexo='Macho',user_id=current_user.id).all()
+    hembras = Oveja.query.filter_by(sexo='Hembra', user_id=current_user.id).all()
+    machos = Oveja.query.filter_by(sexo='Macho', user_id=current_user.id).all()
 
-    form.id_oveja.choices = [(hembra.id, hembra.nombre) for hembra in hembras]
-    form.id_macho.choices = [(macho.id, macho.nombre) for macho in macho]
+    # Agregar las opciones de ovejas hembras al SelectField
+    form.id_oveja.choices = [(hembra.id, f'Oveja {hembra.nombre} (ID: {hembra.id})') for hembra in hembras]
+    
+    # Agregar las opciones de ovejas machos al SelectField con opción "Ninguno"
+    form.id_macho.choices = [(0, 'Ninguno')] + [(macho.id, f'Oveja {macho.nombre} (ID: {macho.id})') for macho in machos]
 
     if form.validate_on_submit():
         nueva_reproduccion = Reproduccion(
             id_oveja=form.id_oveja.data,
             fecha_apareamiento=form.fecha_apareamiento.data,
-            id_macho=form.id_macho.data if form.id_macho.data is not None else None,
-            fecha_parto=form.fecha_parto.data if form.fecha_parto.data is not None else None,
-            num_crias=form.num_crias.data if form.num_crias.data is not None else None,
+            id_macho=form.id_macho.data if form.id_macho.data != 0 else None,  # Verificar si seleccionó "Ninguno"
+            fecha_parto=form.fecha_parto.data if form.fecha_parto.data else None,
+            num_crias=form.num_crias.data if form.num_crias.data else None,
             user_id=current_user.id  # Asignar el user_id del usuario actual
         )
         db.session.add(nueva_reproduccion)
@@ -253,7 +256,7 @@ def registrar_reproduccion():
         flash('Registro de reproducción creado exitosamente!', 'success')
         return redirect(url_for('listar_reproduccion'))
 
-    return render_template('registrar_reproduccion.html', form=form, oveja=hembras, ovejas=macho)
+    return render_template('registrar_reproduccion.html', form=form)
 #-----------------------------------------------------------------------------------------------------------termina--------
 
 @app.route('/listar_reproduccion')
@@ -276,19 +279,27 @@ def listar_reproduccion():
     return render_template('listar_reproduccion.html', reproducciones=reproducciones)
 
 
+
 @app.route('/editar_reproduccion/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_reproduccion(id):
     reproduccion = Reproduccion.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = ReproduccionForm(obj=reproduccion)
+    # Cargar todas las ovejas existentes para seleccionar id_oveja y id_macho
+    ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
+    # Agregar las opciones de ovejas al SelectField para id_oveja
+    form.id_oveja.choices = [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in ovejas]
+    # Agregar las opciones de ovejas machos al SelectField para id_macho
+    machos = Oveja.query.filter_by(sexo='Macho', user_id=current_user.id).all()
+    form.id_macho.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in machos]
     if form.validate_on_submit():
         reproduccion.id_oveja = form.id_oveja.data
         reproduccion.fecha_apareamiento = form.fecha_apareamiento.data
-        reproduccion.id_macho = form.id_macho.data if form.id_macho.data else None
+        reproduccion.id_macho = form.id_macho.data if form.id_macho.data != 0 else None
         reproduccion.fecha_parto = form.fecha_parto.data if form.fecha_parto.data else None
         reproduccion.num_crias = form.num_crias.data if form.num_crias.data else None
         db.session.commit()
-        flash('registro editado!', 'success')
+        flash('Registro editado!', 'success')
         return redirect(url_for('listar_reproduccion'))
     return render_template('editar_reproduccion.html', form=form)
 

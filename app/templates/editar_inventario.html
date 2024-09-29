@@ -1,54 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Inventario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 0.5rem;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            background-color: #1c5d99;
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px;
+        }
+    </style>
 </head>
-<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 <body>
-    <div class="navbar">
-        <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
+        </div>
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_inventario') }}">Listar Inventario</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('insertar_inventario') }}">Agregar Inventario</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container mt-3">
+        <form method="POST" action="{{ url_for('editar_inventario', id=item.id) }}">
+            {{ form.hidden_tag() }}
+            <h1>Editar Inventario</h1>
+
+            <div class="form-group">
+                <label for="tipo">Tipo:</label>
+                <input type="text" name="tipo" id="tipo" class="form-control" value="{{ form.tipo.data }}" required>
             </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <input type="text" name="descripcion" id="descripcion" class="form-control" value="{{ form.descripcion.data }}" required>
+            </div>
+            <div class="form-group">
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" name="cantidad" id="cantidad" class="form-control" value="{{ form.cantidad.data }}" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_adquisicion">Fecha de Adquisición:</label>
+                <input type="date" name="fecha_adquisicion" id="fecha_adquisicion" class="form-control" value="{{ form.fecha_adquisicion.data }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
     </div>
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
-    <footer>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
-    <div class="sidebar">
-        <a href="{{url_for('listar_inventario')}}">listar inventario</a></li>
-        <a href="{{ url_for('insertar_inventario') }}">Agregar inventario</a>
-        </div>
-    <form method="POST" action="{{ url_for('editar_inventario', id=item.id) }}">
-        <h1>Editar Inventario</h1>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-        {{ form.hidden_tag() }}
-        
-        <label for="tipo">Tipo:</label>
-        <input type="text" name="tipo" id="tipo" value="{{ form.tipo.data }}" required>
-        
-        <label for="descripcion">Descripción:</label>
-        <input type="text" name="descripcion" id="descripcion" value="{{ form.descripcion.data }}" required>
-        
-        <label for="cantidad">Cantidad:</label>
-        <input type="text" name="cantidad" id="cantidad" value="{{ form.cantidad.data }}" required>
-        
-        <label for="fecha_adquisicion">Fecha de Adquisición:</label>
-        <input type="date" name="fecha_adquisicion" id="fecha_adquisicion" value="{{ form.fecha_adquisicion.data }}" required>
-        
-        <input type="submit" value="Guardar">
-    </form>
+
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
+
 </body>
 </html>
-

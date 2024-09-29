@@ -5,121 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Reproducción</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+   .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 1rem; /* Ajusta el padding de la barra */
+            position: fixed; /* Fijo en la parte superior */
+            width: 100%; /* Asegura que el navbar ocupe todo el ancho */
+            z-index: 1000; /* Mantener el navbar por encima de otros elementos */
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px; /* Reduce el espaciado entre elementos */
+        }
+    </style>
     <script>
         // Función para calcular la fecha de parto
         function calcularFechaParto() {
-            // Obtener la fecha de apareamiento desde el campo de entrada
             const fechaApareamiento = document.getElementById('fecha_apareamiento').value;
             if (fechaApareamiento) {
-                // Convertir la fecha de apareamiento en un objeto Date
                 const dateApareamiento = new Date(fechaApareamiento);
-
-                // Definir el periodo de gestación (150 días en milisegundos)
                 const periodoGestacion = 150 * 24 * 60 * 60 * 1000;
-
-                // Calcular la fecha de parto
                 const fechaParto = new Date(dateApareamiento.getTime() + periodoGestacion);
-
-                // Formatear la fecha de parto en formato YYYY-MM-DD
                 const año = fechaParto.getFullYear();
-                const mes = String(fechaParto.getMonth() + 1).padStart(2, '0'); // Meses en JavaScript son de 0 a 11
+                const mes = String(fechaParto.getMonth() + 1).padStart(2, '0');
                 const día = String(fechaParto.getDate()).padStart(2, '0');
-
-                // Establecer el valor del campo de fecha de parto
                 document.getElementById('fecha_parto').value = `${año}-${mes}-${día}`;
             } else {
-                // Limpiar el campo de fecha de parto si no hay fecha de apareamiento
                 document.getElementById('fecha_parto').value = '';
             }
         }
     </script>
 </head>
 <body>
-    <div class="navbar">
-        <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1c5d99;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
+        </div>
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('registrar_reproduccion') }}">Registrar Reproducción</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_reproduccion') }}">Listar Reproducción</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container mt-3">
+        <!-- Mostrar mensajes flash -->
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flashes">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <h1>Registrar Reproducción</h1>
+            <div class="form-group">
+                {{ form.id_oveja.label(class_='form-label') }}
+                {{ form.id_oveja(class_='form-control') }}
+                {% for error in form.id_oveja.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
             </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
-    </div>
-    <!-- Mostrar mensajes flash -->
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="flashes">
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                  {{ message }}
-                </div>
-              {% endfor %}
+            <div class="form-group">
+                {{ form.fecha_apareamiento.label(class_='form-label') }}
+                {{ form.fecha_apareamiento(size=32, id='fecha_apareamiento', oninput='calcularFechaParto()', class_='form-control') }}<br>
+                {% for error in form.fecha_apareamiento.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
             </div>
-          {% endif %}
-        {% endwith %}
+            <div class="form-group">
+                {{ form.id_macho.label(class_='form-label') }}
+                {{ form.id_macho(class_='form-control') }}
+                {% for error in form.id_macho.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.fecha_parto.label(class_='form-label') }}
+                {{ form.fecha_parto(size=32, id='fecha_parto', readonly=true, class_='form-control') }}<br>
+                {% for error in form.fecha_parto.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.num_crias.label(class_='form-label') }}
+                {{ form.num_crias(size=32, class_='form-control') }}<br>
+                {% for error in form.num_crias.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class_='btn btn-primary') }}
+            </div>
+        </form>
     </div>
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
-    <footer>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
-    
-    <div class="sidebar">
-    <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
-    <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
-    </div>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <p>
-            <h1>Registrar Reproducción</h1>
-            {{ form.id_oveja.label }}<br>
-            <select name="id_oveja" id="id_oveja">
-                {% for hembra in oveja %}
-                    <option value="{{ hembra.id }}">{{ hembra.nombre }}</option> 
-                {% else %}
-                    <option>No se encontraron hembras</option>  
-                {% endfor %}
-            </select>
-        <p>
-            {{ form.fecha_apareamiento.label }}<br>
-            {{ form.fecha_apareamiento(size=32, id='fecha_apareamiento', oninput='calcularFechaParto()') }}<br>
-            {% for error in form.fecha_apareamiento.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.id_macho.label }}<br>
-            <select name="id_macho" id="id_macho">
-                {% for macho in ovejas %}
-                    <option value="{{ macho.id }}">{{ macho.nombre }}</option> 
-                {% else %}
-                    <option>No se encontraron machos</option>  
-                {% endfor %}
-            </select>
-            
-        </p>
-        <p>
-            {{ form.fecha_parto.label }}<br>
-            {{ form.fecha_parto(size=32, id='fecha_parto', readonly=true) }}<br>
-            {% for error in form.fecha_parto.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.num_crias.label }}<br>
-            {{ form.num_crias(size=32) }}<br>
-            {% for error in form.num_crias.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit(class_='btn') }} </p>
-    </form>
+
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            document.querySelector(".container").classList.toggle("collapsed");
+        };
+    </script>
 </body>
 </html>

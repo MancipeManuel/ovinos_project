@@ -4,94 +4,176 @@
     <meta charset="UTF-8">
     <title>Registrar Compra</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 1rem; /* Ajusta el padding de la barra */
+            position: fixed; /* Fijo en la parte superior */
+            width: 100%; /* Asegura que el navbar ocupe todo el ancho */
+            z-index: 1000; /* Mantener el navbar por encima de otros elementos */
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px; /* Reduce el espaciado entre elementos */
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1c5d99;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
+        </div>
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_compra') }}">Listar Compras</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('registrar_compra') }}">Registrar Compras</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container mt-3">
+        <!-- Mostrar mensajes flash -->
         <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
-            </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
-    </div>
-    <!-- Mostrar mensajes flash -->
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="flashes">
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                  {{ message }}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flashes">
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
                 </div>
-              {% endfor %}
+              {% endif %}
+            {% endwith %}
+        </div>
+
+        <form method="POST" action="{{ url_for('registrar_compra') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <h1>Registrar Nueva Compra</h1>
+                {{ form.tipo_producto.label(class_='form-label') }}
+                {{ form.tipo_producto(class_='form-control', size=32) }}
+                {% for error in form.tipo_producto.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
             </div>
-          {% endif %}
-        {% endwith %}
+
+            <div class="form-group">
+                {{ form.descripcion.label(class_='form-label') }}
+                {{ form.descripcion(class_='form-control') }}
+                {% for error in form.descripcion.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.cantidad.label(class_='form-label') }}
+                {{ form.cantidad(class_='form-control', size=32) }}
+                {% for error in form.cantidad.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.precio.label(class_='form-label') }}
+                {{ form.precio(class_='form-control') }}
+                {% for error in form.precio.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.fecha.label(class_='form-label') }}
+                {{ form.fecha(class_='form-control') }}
+                {% for error in form.fecha.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class_='btn btn-primary') }} 
+            </div>
+        </form>
     </div>
-    <div class="container">
-    <footer>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
-    
-    <div class="sidebar">
-        <a href="{{url_for('registrar_compra')}}">registrar compras</a></li>
-        <a href="{{url_for('listar_compra')}}">listar compras</a></li>
-    </div>
-    <h1>Registrar Nueva Compra</h1>
-    <form method="POST" action="{{ url_for('registrar_compra') }}">
-        {{ form.hidden_tag() }}
-        <div>
-            {{ form.tipo_producto.label }}<br>
-            {{ form.tipo_producto(size=32) }}<br>
-            {% for error in form.tipo_producto.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}            
-        </div>
 
-        <div>
-            {{ form.descripcion.label }}<br>
-            {{ form.descripcion() }}<br>
-            {% for error in form.descripcion.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div>
-            {{ form.cantidad.label }}<br>
-            {{ form.cantidad(size=32) }}<br>
-            {% for error in form.cantidad.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div>
-            {{ form.precio.label }}<br>
-            {{ form.precio() }}<br>
-            {% for error in form.precio.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div>
-            {{ form.fecha.label }}<br>
-            {{ form.fecha  }}<br>
-            {% for error in form.fecha.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div>
-            {{ form.submit(class_='btn') }} 
-        </div>
-        {% block content %}{% endblock %}
-    </div>
-    </form>
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
 </body>
 </html>

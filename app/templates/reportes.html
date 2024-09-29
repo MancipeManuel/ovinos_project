@@ -1,39 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generar Reporte</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            padding-top: 70px;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #1c5d99;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: #1c5d99;">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a></li>
+            </ul>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <form method="post" action="/generar_reporte">
+            <h1>Generar Reporte</h1>
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.tipo_reporte.label(class="form-label") }}
+                {{ form.tipo_reporte(class="form-control") }}
             </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+            <div class="form-group">
+                {{ form.formato.label(class="form-label") }}
+                {{ form.formato(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+        </form>
     </div>
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
-    <footer>
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
-    
-    <form method="post" action="/generar_reporte">
-        <h1>Generar Reporte</h1>
-        {{ form.hidden_tag() }}
-        {{ form.tipo_reporte.label }} {{ form.tipo_reporte() }}
-        {{ form.formato.label }} {{ form.formato() }}
-        {{ form.submit() }}
-    </form>
 </body>
 </html>
-

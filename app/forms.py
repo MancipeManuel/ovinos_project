@@ -51,7 +51,7 @@ class OvejaForm(FlaskForm):
 class ReproduccionForm(FlaskForm):
     id_oveja = SelectField('ID Oveja (Hembra)', coerce=int, validators=[DataRequired()])
     fecha_apareamiento = DateField('Fecha de Apareamiento', format='%Y-%m-%d', validators=[DataRequired()])
-    id_macho = SelectField('ID Macho', coerce=int, validators=[])
+    id_macho = SelectField('ID Macho', choices=[], coerce=int, validators=[Optional()])
     fecha_parto = DateField('Fecha de Parto', format='%Y-%m-%d', validators=[], default=None)
     num_crias = IntegerField('Número de Crías', validators=[], default=None)
     submit = SubmitField('Guardar')
