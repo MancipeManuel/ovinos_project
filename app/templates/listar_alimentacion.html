@@ -149,7 +149,10 @@
                         <td>{{ alimentacion.cantidad }}</td>
                         <td>
                             <a href="{{ url_for('editar_alimentacion', id=alimentacion.id) }}" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="{{ url_for('eliminar_alimentacion', id=alimentacion.id) }}" class="btn btn-danger btn-sm">Eliminar</a>
+                            <form action="{{ url_for('eliminar_alimentacion', id=alimentacion.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta alimentación?');">Eliminar</button>
+                            </form>                            
                         </td>
                     </tr>
                 {% endfor %}

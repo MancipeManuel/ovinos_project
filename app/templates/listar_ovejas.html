@@ -128,32 +128,42 @@
         <h1 style="margin-top: 70px;">Listado de Ovejas</h1>
         
         <!-- Tabla de ovejas -->
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Fecha de Nacimiento</th>
-                    <th>Raza</th>
-                    <th>Sexo</th>
-                    <th>ID Padre</th>
-                    <th>ID Madre</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for oveja in ovejas %}
-                    <tr>
-                        <td>{{ oveja.id }}</td>
-                        <td>{{ oveja.nombre }}</td>
-                        <td>{{ oveja.fecha_nacimiento }}</td>
-                        <td>{{ oveja.raza }}</td>
-                        <td>{{ oveja.sexo }}</td>
-                        <td>{{ oveja.id_padre }}</td>
-                        <td>{{ oveja.id_madre }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Raza</th>
+            <th>Sexo</th>
+            <th>ID Padre</th>
+            <th>ID Madre</th>
+            <th>Acciones</th>  <!-- Nueva columna para las acciones -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for oveja in ovejas %}
+            <tr>
+                <td>{{ oveja.id }}</td>
+                <td>{{ oveja.nombre }}</td>
+                <td>{{ oveja.fecha_nacimiento }}</td>
+                <td>{{ oveja.raza }}</td>
+                <td>{{ oveja.sexo }}</td>
+                <td>{{ oveja.id_padre }}</td>
+                <td>{{ oveja.id_madre }}</td>
+                <td>
+                    <!-- Botón para editar -->
+                    <a href="{{ url_for('editar_oveja', id=oveja.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                    <!-- Formulario para eliminar -->
+                    <form action="{{ url_for('eliminar_oveja', id=oveja.id) }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta oveja?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
     </div>
 
     <!-- Pie de página -->
