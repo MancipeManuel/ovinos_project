@@ -156,8 +156,21 @@ def logout():
 @app.route('/listar_ovejas')
 @login_required
 def listar_ovejas():
-    ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
-    return render_template('listar_ovejas.html', ovejas=ovejas)
+    search_query = request.args.get('search', '')  # Obtener el término de búsqueda desde la solicitud
+    if search_query:
+        # Buscar en varios campos: nombre, raza, sexo y fecha de nacimiento
+        ovejas = Oveja.query.filter(
+            (Oveja.nombre.contains(search_query)) |
+            (Oveja.raza.contains(search_query)) |
+            (Oveja.sexo.contains(search_query)) |
+            (Oveja.fecha_nacimiento.contains(search_query))|
+            (Oveja.id_madre.contains(search_query))|
+            (Oveja.id_padre.contains(search_query))
+        ).filter_by(user_id=current_user.id).all()
+    else:
+        # Si no hay búsqueda, muestra todas las ovejas
+        ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
+    return render_template('listar_ovejas.html', ovejas=ovejas, search_query=search_query)
 
 @app.route('/registrar_oveja', methods=['GET', 'POST'])
 @login_required
@@ -191,18 +204,25 @@ def registrar_oveja():
 def editar_oveja(id):
     oveja = Oveja.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = OvejaForm(obj=oveja)
+
+    # Cargar todas las ovejas existentes para seleccionar padre y madre
+    machos = Oveja.query.filter_by(sexo='Macho', user_id=current_user.id).all()
+    hembras = Oveja.query.filter_by(sexo='Hembra', user_id=current_user.id).all()
+    # Agregar las opciones de ovejas machos al SelectField del padre
+    form.id_padre.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in machos]
+    # Agregar las opciones de ovejas hembras al SelectField de la madre
+    form.id_madre.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in hembras]
     if form.validate_on_submit():
         oveja.nombre = form.nombre.data
         oveja.fecha_nacimiento = form.fecha_nacimiento.data
         oveja.raza = form.raza.data
         oveja.sexo = form.sexo.data
-        oveja.id_padre = form.id_padre.data
-        oveja.id_madre = form.id_madre.data
+        oveja.id_padre = form.id_padre.data if form.id_padre.data != 0 else None
+        oveja.id_madre = form.id_madre.data if form.id_madre.data != 0 else None  
         db.session.commit()
-        flash('oveja editada correctamente!', 'success')
+        flash('Oveja editada correctamente!', 'success')
         return redirect(url_for('listar_ovejas'))
     return render_template('editar_oveja.html', form=form)
-
 
 @app.route('/eliminar_oveja/<int:id>', methods=['POST'])
 @login_required
@@ -359,6 +379,8 @@ def eliminar_salud(id):
 @login_required
 def registrar_alimentacion():
     form = AlimentacionForm()
+    oveja = Oveja.query.filter_by(user_id=current_user.id).all()
+    form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in oveja]
     if form.validate_on_submit():
         nueva_alimentacion = Alimentacion(
             id_oveja=form.id_oveja.data,
@@ -375,19 +397,32 @@ def registrar_alimentacion():
         return redirect(url_for('listar_alimentacion'))  # Redirige a la vista de notificaciones # Redirige a la vista de notificaciones
     return render_template('registrar_alimentacion.html', form=form)
 
-
-
 @app.route('/listar_alimentacion')
 @login_required
 def listar_alimentacion():
-    alimentaciones = Alimentacion.query.filter_by(user_id=current_user.id).all()
-    return render_template('listar_alimentacion.html', alimentaciones=alimentaciones)
+    search_query = request.args.get('search', '')  # Obtener el término de búsqueda desde la solicitud
+    if search_query:
+        # Buscar en varios campos: tipo de alimento, fecha, cantidad
+        alimentaciones = Alimentacion.query.filter(
+            (Alimentacion.tipo_alimento.contains(search_query)) |
+            (Alimentacion.fecha.contains(search_query)) |
+            (Alimentacion.cantidad.contains(search_query)) |
+            (Oveja.nombre.contains(search_query))  # Filtrar por nombre de la oveja también
+        ).join(Oveja).filter(Alimentacion.user_id == current_user.id).all()  # Solo alimentaciones del usuario actual
+    else:
+        # Si no hay búsqueda, muestra todas las alimentaciones
+        alimentaciones = Alimentacion.query.filter_by(user_id=current_user.id).all()
+    
+    return render_template('listar_alimentacion.html', alimentaciones=alimentaciones, search_query=search_query)
+
 
 @app.route('/editar_alimentacion/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_alimentacion(id):
     alimentacion = Alimentacion.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = AlimentacionForm(obj=alimentacion)
+    oveja = Oveja.query.filter_by(user_id=current_user.id).all()
+    form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in oveja]
     if form.validate_on_submit():
         alimentacion.id_oveja = form.id_oveja.data
         alimentacion.fecha = form.fecha.data
@@ -416,6 +451,8 @@ def eliminar_alimentacion(id):
 @app.route('/registrar_venta', methods=['GET', 'POST'])
 @login_required
 def registrar_venta():
+    oveja = Oveja.query.filter_by(user_id=current_user.id).all()
+    form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in oveja]
     form = VentaForm()
     if form.validate_on_submit():
         nueva_venta = Venta(
@@ -453,7 +490,7 @@ def listar_venta():
         ventas = Venta.query.filter(
             (Venta.id.like(f'%{search_query}%')) |
             (Venta.id_oveja.like(f'%{search_query}%')) |
-            (Venta.precio.like(f'%{search_query}%'))  # Puedes agregar otros campos si es necesario
+            (Venta.precio.like(f'%{search_query}%')) 
         ).filter_by(user_id=current_user.id).all()
     else:
         # Si no hay término de búsqueda, muestra todas las ventas

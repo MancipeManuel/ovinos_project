@@ -64,14 +64,14 @@ class saludForm(FlaskForm):
     submit = SubmitField('Guardar')
 
 class AlimentacionForm(FlaskForm):
-    id_oveja = IntegerField('ID Oveja', validators=[DataRequired()])
+    id_oveja = SelectField('ID Oveja', choices=[], coerce=int, validators=[DataRequired()])
     fecha = DateField('Fecha', validators=[DataRequired()])
     tipo_alimento = StringField('Tipo de Alimento', validators=[DataRequired()])
     cantidad = FloatField('Cantidad', validators=[DataRequired()])
     submit = SubmitField('Guardar')
     
 class VentaForm(FlaskForm):
-    id_oveja = IntegerField('ID Oveja', validators=[DataRequired()])
+    id_oveja = SelectField('ID Oveja', choices=[], coerce=int, validators=[Optional()])
     fecha = DateField('Fecha', format='%Y-%m-%d', validators=[DataRequired()])
     cantidad = IntegerField('Cantidad', validators=[DataRequired(), NumberRange(min=1)])
     precio = DecimalField('Precio', validators=[DataRequired(), NumberRange(min=0)])

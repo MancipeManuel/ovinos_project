@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Análisis Financiero</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Financiero</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .chart-container {
             position: relative;
@@ -17,80 +22,154 @@
             width: 100% !important; /* Asegura que el canvas ocupe todo el ancho del contenedor */
             height: auto !important; /* Ajusta la altura proporcionalmente */
         }
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 0.5rem; /* Ajusta el padding de la barra */
+            position: fixed; /* Fijo en la parte superior */
+            width: 100%; /* Asegura que el navbar ocupe todo el ancho */
+            z-index: 1000; /* Mantener el navbar por encima de otros elementos */
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px; /* Reduce el espaciado entre elementos */
+        }
+        .navbar {
+            padding: 0.5rem 1rem; /* Ajusta el padding de la barra */
+        }
     </style>
 </head>
 <body>
-    <body>
-        <div class="navbar">
-            <div>
-                <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
-                </div>
-            <a href="{{ url_for('index') }}">Inicio</a>
-            <a href="{{ url_for('oveja') }}"> ovejas  </a>
-            <a href="{{ url_for('salud') }}">salud</a>
-            <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-            <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-            <a href="{{url_for('finanzas')}}">finanzas</a></li>
-            <a href="{{url_for('venta')}}">ventas</a></li>
-            <a href="{{url_for('compra')}}">compras</a></li>
-            <a href="{{url_for('inventario')}}">inventario</a>
-            <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
-        </div>
-        <div class="container">
-            {% block content %}{% endblock %}
-        </div>
-        <footer>
-            &copy; 2024 Gestión de Ovinos
-        </footer>
-        <div class="sidebar">
-            <a href="{{url_for('listar_finanzas')}}">listar finanzas</a></li>
-            <a href="{{url_for('analisis_financiero')}}">ver estado Financiero</a></li>
-            <a href="{{url_for('informe_mensual')}}">ver informe Mensual</a></li>
-        </div>
-        
 
-    <div class="container">
-        <h1>Análisis Financiero</h1>
-        <p>Total Ventas: ${{ total_ventas }}</p>
-        <p>Total Compras: ${{ total_compras }}</p>
-        <p>Saldo Total: ${{ saldo_total }}</p>
-        
-        <!-- Gráfico de Análisis Financiero -->
-        <div class="chart-container">
-            <canvas id="analisisFinancieroChart"></canvas>
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1c5d99;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
         </div>
+    </nav>
 
-        <script>
-            const ctx = document.getElementById('analisisFinancieroChart').getContext('2d');
-            const analisisFinancieroChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Ventas', 'Compras', 'Saldo Total'],
-                    datasets: [{
-                        label: 'Monto en $',
-                        data: [{{total_ventas}}, {{total_compras}}, {{saldo_total}}],
-                        backgroundColor: ['#4CAF50', '#F44336', '#FFC107'],
-                        borderColor: ['#4CAF50', '#F44336', '#FFC107'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value; // Añade símbolo de dólar a las etiquetas del eje Y
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="{{url_for('listar_finanzas')}}">listar finanzas</a></li>
+            </li>
+            <li class="nav-item">
+                <a href="{{url_for('analisis_financiero')}}">ver estado Financiero</a></li>
+            </li>
+            <li class="nav-item">
+                <a href="{{url_for('informe_mensual')}}">ver informe Mensual</a></li>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container mt-3">
+            <h1>Análisis Financiero</h1>
+            <p>Total Ventas: ${{ total_ventas }}</p>
+            <p>Total Compras: ${{ total_compras }}</p>
+            <p>Saldo Total: ${{ saldo_total }}</p>
+            
+            <!-- Gráfico de Análisis Financiero -->
+            <div class="chart-container">
+                <canvas id="analisisFinancieroChart"></canvas>
+            </div>
+    
+            <script>
+                const ctx = document.getElementById('analisisFinancieroChart').getContext('2d');
+                const analisisFinancieroChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ventas', 'Compras', 'Saldo Total'],
+                        datasets: [{
+                            label: 'Monto en $',
+                            data: [{{total_ventas}}, {{total_compras}}, {{saldo_total}}],
+                            backgroundColor: ['#4CAF50', '#F44336', '#FFC107'],
+                            borderColor: ['#4CAF50', '#F44336', '#FFC107'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value; // Añade símbolo de dólar a las etiquetas del eje Y
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
-        </script>
-        
+                });
+            </script>
     </div>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
+        &copy; 2024 Gestión de Ovinos
+    </footer>
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
 </body>
 </html>
