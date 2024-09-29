@@ -2,46 +2,118 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Ovinos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* General */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Altura mínima de la vista completa */
+        }
+
+        /* Barra de Navegación Superior */
+        nav.navbar {
+            background-color: #1c5d99; /* Color igual al del estilo */
+            padding: 10px 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        nav.navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        nav.navbar a:hover {
+            color: #ffcc00;
+        }
+
+        /* Botón de salir */
+        .btn-salir {
+            background-color: #dc3545;
+            color: white;
+            border-radius: 5px;
+            padding: 10px 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-salir:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        /* Contenido principal */
+        .content-section {
+            margin: 20px 0;
+            flex-grow: 1; /* Permitir que el contenido crezca y empuje el pie de página */
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1c5d99; /* Color igual al de la navbar */
+            color: white;
+            padding: 10px 0;
+            margin-top: auto; /* Empujar el pie de página al fondo */
+            text-align: center;
+        }
+    </style>
 </head>
-<style>
-    
-</style>
 <body>
-    <div class="navbar">
-        <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
+    <!-- Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a></li>
+                    <li class="nav-item"><a class="nav-link btn-salir" href="{{ url_for('logout') }}">Salir</a></li>
+                </ul>
             </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
-    </div>
-    <div class="container">
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <div class="content-section">
+            <p>Ver el catálogo actualizado</p>
+            <a class="btn btn-primary" href="{{ url_for('catalogo') }}">Ir al catálogo</a>
+        </div>
+        <div class="content-section">
+            <p>Recetas alternativas</p>
+            <a class="btn btn-primary" href="{{ url_for('recetas') }}">Ver recetas</a>
+        </div>
         {% block content %}{% endblock %}
     </div>
+
+    <!-- Footer -->
     <footer>
-        &copy; 2024 Gestión de Ovinos
+        <p>&copy; 2024 Gestión de Ovinos</p>
     </footer>
-    
 
-    <div class="nombre">
-        <p>Ver el catálogo actualizado</p>
-        <a href="{{ url_for('catalogo') }}">Ir al catálogo</a>
-    </div>
-
-    <div class="nombre">
-        <p>recetas alternativas</p>
-        <a href="{{ url_for('recetas') }}">ver recetas</a>
-    </div>
-
-    </div>    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

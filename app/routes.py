@@ -580,7 +580,19 @@ def eliminar_compra(id):
 @app.route('/listar_finanzas')
 @login_required
 def listar_finanzas():
-    finanzas = Finanzas.query.order_by(Finanzas.fecha.desc()).all()
+    search_query = request.args.get('search', '')  # Obtener el término de búsqueda desde la solicitud
+    # Filtrar las finanzas según el término de búsqueda
+    if search_query:
+        # Buscar en los campos tipo, descripción, monto y fecha
+        finanzas = Finanzas.query.filter(
+            (Finanzas.tipo.contains(search_query)) |
+            (Finanzas.descripcion.contains(search_query)) |
+            (Finanzas.monto.like(f"%{search_query}%")) |  # Para buscar por monto, aunque sea float
+            (Finanzas.fecha.like(f"%{search_query}%"))    # Para buscar por fecha
+        ).filter_by(user_id=current_user.id).order_by(Finanzas.fecha.desc()).all()
+    else:
+        # Si no hay búsqueda, mostrar todas las finanzas
+        finanzas = Finanzas.query.filter_by(user_id=current_user.id).order_by(Finanzas.fecha.desc()).all()
     return render_template('listar_finanzas.html', finanzas=finanzas)
 #----------------------------------------------------------------------analisis financiero------------
 

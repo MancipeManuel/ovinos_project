@@ -3,106 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Ovejas</title>
+    <title>Listar Ovejas</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 0.5rem; /* Ajusta el padding de la barra */
+            position: fixed; /* Fijo en la parte superior */
+            width: 100%; /* Asegura que el navbar ocupe todo el ancho */
+            z-index: 1000; /* Mantener el navbar por encima de otros elementos */
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px; /* Reduce el espaciado entre elementos */
+        }
+        .navbar {
+            padding: 0.5rem 1rem; /* Ajusta el padding de la barra */
+        }
+        .navbar-nav {
+        max-width: 800px; /* Establece un ancho máximo para la barra */
+        overflow-x: auto; /* Permite desplazamiento si es necesario */
+        }
+    </style>
 </head>
 <body>
-    <style>.alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-    }
-    
-    .alert-success {
-        color: #3c763d;
-        background-color: #dff0d8;
-        border-color: #d6e9c6;
-    }
-    
-    .alert-danger {
-        color: #a94442;
-        background-color: #f2dede;
-        border-color: #ebccd1;
-    }
-    </style>
-    <div class="navbar">
-        <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
-            </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
-    </div>
 
-</br></br></br>
-<!-- Mostrar mensajes flash -->
-<div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flashes">
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-              {{ message }}
-            </div>
-          {% endfor %}
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1c5d99;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" method="GET" action="{{ url_for('listar_ovejas') }}">
+                <input class="form-control mr-sm-2" type="search" name="search" placeholder="Buscar ovejas..." aria-label="Search" value="{{ request.args.get('search', '') }}">
+                <button class="btn btn-light my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
         </div>
-      {% endif %}
-    {% endwith %}
-</div>
-    <footer>
-        &copy; 2024 Gestión de Ovinos
-    </footer>
-    
-    <div class="sidebar">
-        <a href="{{ url_for('listar_ovejas') }}">listar Ovejas</a>
-        <a href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_ovejas') }}">Listar Ovejas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('registrar_oveja') }}">Registrar Oveja</a>
+            </li>
+        </ul>
     </div>
 
-    <h1>Listado de Ovejas</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Fecha de Nacimiento</th>
-                <th>Raza</th>
-                <th>Sexo</th>
-                <th>ID Padre</th>
-                <th>ID Madre</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for oveja in ovejas %}
-            <tr>
-                <td>{{ oveja.id }}</td>
-                <td>{{ oveja.nombre }}</td>
-                <td>{{ oveja.fecha_nacimiento.strftime('%Y-%m-%d') }}</td>
-                <td>{{ oveja.raza }}</td>
-                <td>{{ oveja.sexo }}</td>
-                <td>{{ oveja.id_padre }}</td>
-                <td>{{ oveja.id_madre }}</td>
-                <td>
-                    <a href="{{ url_for('editar_oveja', id=oveja.id) }}" class="btn">Editar</a>
-                    <form action="{{ url_for('eliminar_oveja', id=oveja.id) }}" method="POST" style="display:inline;">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta oveja?');">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Contenido principal -->
+    <div class="container mt-3">
 
-    <footer>
+        <!-- Mostrar mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flashes">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Título -->
+        <h1 style="margin-top: 70px;">Listado de Ovejas</h1>
+        
+        <!-- Tabla de ovejas -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Raza</th>
+                    <th>Sexo</th>
+                    <th>ID Padre</th>
+                    <th>ID Madre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for oveja in ovejas %}
+                    <tr>
+                        <td>{{ oveja.id }}</td>
+                        <td>{{ oveja.nombre }}</td>
+                        <td>{{ oveja.fecha_nacimiento }}</td>
+                        <td>{{ oveja.raza }}</td>
+                        <td>{{ oveja.sexo }}</td>
+                        <td>{{ oveja.id_padre }}</td>
+                        <td>{{ oveja.id_madre }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
+
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
+
 </body>
 </html>

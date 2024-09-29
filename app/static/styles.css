@@ -10,7 +10,7 @@ body {
 
 /* Barra de Navegación Superior */
 .navbar {
-    background-color: #1c5d99;
+    background-color: #1c5d99; /* Color específico del navbar */
     padding: 10px 20px;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -29,7 +29,7 @@ body {
 }
 
 .navbar a:hover {
-    color: #1c5d99;
+    color: #1c5d99; /* Cambia el color al pasar el ratón */
 }
 
 /* Barra de Navegación Vertical */
@@ -77,10 +77,6 @@ form {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
 input[type="text"],
 input[type="number"],
 input[type="email"],
@@ -93,81 +89,6 @@ textarea {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-}
-
-textarea {
-    resize: vertical;
-}
-
-button {
-    background-color: #1c5d99;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-button:hover {
-    background-color: #3c8dbc;
-}
-
-/* Botones de Login y Register */
-.btn-login,
-.btn-register {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #1c5d99; /* Color de fondo para el login y register */
-    color: #f1e8e8; /* Color del texto */
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    text-align: center;
-    border: 1px solid #ccc;
-}
-
-.btn-login:hover,
-.btn-register:hover {
-    background-color: #1c5d99; /* Mantener el color de fondo al pasar el ratón */
-    color: #f5f7fa; /* Color del texto al pasar el ratón */
-    border: 1px solid #1c5d99;
-}
-
-/* Tables */
-table {
-    width: calc(100% - 250px); /* Ajustar el ancho para dejar espacio para la barra lateral */
-    margin-right: 250px; /* Desplazar la tabla para que empiece al lado de la barra lateral */
-    border-collapse: collapse;
-    margin: 20px 0; /* Ajuste de margen superior e inferior */
-}
-
-th, td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-}
-
-th {
-    background-color: #1c5d99;
-    color: white;
-}
-
-tr:hover {
-    background-color: #f5f5f5;
-}
-
-/* Footer */
-footer {
-    background-color: #1c5d99;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    position: fixed;
-    bottom: 0;
-    width: calc(100%);
-    right: 0;
-    z-index: 850; /* Debe estar por debajo de la barra lateral, pero por encima del contenido principal */
 }
 
 /* Botones estilizados */
@@ -187,19 +108,6 @@ footer {
     color: white;
 }
 
-/* Charts */
-.chart-container {
-    position: relative;
-    width: 90%;
-    max-width: 500px;
-    margin: 20px auto;
-}
-
-canvas {
-    width: 100% !important;
-    height: auto !important;
-}
-
 /* Botón de Cierre de Sección */
 .btn-close {
     display: inline-block;
@@ -207,101 +115,30 @@ canvas {
     background-color: #ff4d4d; /* Color de fondo para el botón de cierre */
     color: #fff; /* Color del texto */
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 25px; /* Bordes más redondeados para un diseño más moderno */
     font-weight: bold;
     text-align: center;
-    border: 1px solid #d9534f; /* Color del borde */
+    border: none; /* Sin borde para un diseño más limpio */
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* Añadido de sombra al pasar el ratón */
 }
 
 .btn-close:hover {
     background-color: #d9534f; /* Color de fondo al pasar el ratón */
-    color: #fff; /* Color del texto al pasar el ratón */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más intensa al pasar el ratón */
 }
 
-/* Ejemplo de cómo se puede usar en un formulario */
-.form-group {
-    position: relative; /* Necesario para posicionar el botón de cierre */
-    margin-bottom: 15px;
-}
-
-.btn-close {
-    position: absolute;
-    top: 0px;
-    right: 50px;
-}
-
-.nombre {
-    background-color: #fff; /* Fondo blanco para el contenedor */
-    border: 1px solid #ddd; /* Borde sutil alrededor del contenedor */
-    border-radius: 10px; /* Bordes redondeados del contenedor */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave para dar profundidad */
-    padding: 20px; /* Espaciado interno */
-    margin: 20px auto; /* Espaciado exterior y centrado automático */
-    max-width: 400px; /* Ancho máximo del contenedor */
-    text-align: center; /* Centra el texto dentro del contenedor */
-}
-
-.nombre p {
-    font-size: 18px; /* Tamaño del texto */
-    margin-bottom: 15px; /* Espaciado entre el párrafo y el enlace */
-    color: #333; /* Color del texto */
-}
-
-.nombre a {
-    display: inline-block; /* Necesario para padding y background */
-    font-size: 16px; /* Tamaño del texto del botón */
-    text-decoration: none; /* Elimina el subrayado del enlace */
-    color: #fff; /* Color del texto del botón */
-    background-color: #007bff; /* Color de fondo del botón */
-    padding: 12px 24px; /* Espaciado interno del botón */
-    border-radius: 5px; /* Bordes redondeados del botón */
-    transition: background-color 0.3s, box-shadow 0.3s; /* Transición suave para efectos de hover */
-}
-
-.nombre a:hover {
-    background-color: #0056b3; /* Color de fondo al pasar el ratón */
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Sombra más intensa al pasar el ratón */
-
-}
-
-/* Estilos específicos para la barra de búsqueda */
-.search-bar {
-    margin-bottom: 20px; /* Espacio entre la barra de búsqueda y otros elementos */
-    display: flex;
-    justify-content: center; /* Centrar la barra de búsqueda */
-    align-items: center;
-}
-
-.search-bar input[type="text"] {
-    width: 300px; /* Ancho de la barra de búsqueda */
+/* Footer */
+footer {
+    background-color: #1c5d99;
+    color: white;
+    text-align: center;
     padding: 10px;
-    font-size: 16px; /* Tamaño de la fuente */
-    border: 2px solid #ccc; /* Borde de la barra */
-    border-radius: 5px; /* Bordes redondeados */
-    transition: all 0.3s ease; /* Transición suave al hacer hover o focus */
-}
-
-.search-bar input[type="text"]:hover,
-.search-bar input[type="text"]:focus {
-    border-color: #1c5d99; /* Cambia el color del borde al hacer hover o focus */
-}
-
-.search-bar button {
-    margin-left: 10px; /* Espacio entre el botón y el campo de búsqueda */
-    padding: 10px 20px;
-    background-color: #1c5d99; /* Color de fondo */
-    color: white; /* Color del texto */
-    border: none;
-    border-radius: 5px; /* Bordes redondeados */
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.search-bar button:hover {
-    background-color: #3c8dbc; /* Cambio de color en hover */
+    position: fixed;
+    bottom: 0;
+    width: calc(100%);
+    right: 0;
+    z-index: 850; /* Debe estar por debajo de la barra lateral, pero por encima del contenido principal */
 }
 
 /* Adaptación para pantallas pequeñas */
@@ -314,8 +151,5 @@ canvas {
     }
     .search-bar button {
         width: 100%; /* Botón ocupa el 100% del ancho */
-        margin-left: 0;
-        margin-top: 10px;
     }
 }
-

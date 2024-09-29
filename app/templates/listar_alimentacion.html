@@ -1,83 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listar Alimentaciones</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 0.5rem;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px;
+        }
+        .navbar {
+            padding: 0.5rem 1rem;
+        }
+        .navbar-nav {
+            max-width: 800px;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">salir</a>
-            </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
-    </div>
-</br></br></br>
-<!-- Mostrar mensajes flash -->
-<div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flashes">
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-              {{ message }}
-            </div>
-          {% endfor %}
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1c5d99;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" method="GET" action="{{ url_for('listar_alimentacion') }}">
+                <input class="form-control mr-sm-2" type="search" name="search" placeholder="Buscar alimentaciones..." aria-label="Search" value="{{ request.args.get('search', '') }}">
+                <button class="btn btn-light my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
         </div>
-      {% endif %}
-    {% endwith %}
-</div>
-    <div class="container">
-        {% block content %}{% endblock %}
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_alimentacion') }}">Listar Alimentaciones</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('registrar_alimentacion') }}">Registrar Alimentación</a>
+            </li>
+        </ul>
     </div>
-    <footer>
+
+    <!-- Contenido principal -->
+    <div class="container mt-3">
+
+        <!-- Mostrar mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flashes">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} mt-2">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Título -->
+        <h1 style="margin-top: 70px;">Listado de Alimentaciones</h1>
+        
+        <!-- Tabla de alimentaciones -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID Oveja</th>
+                    <th>Fecha</th>
+                    <th>Tipo de Alimento</th>
+                    <th>Cantidad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alimentacion in alimentaciones %}
+                    <tr>
+                        <td>{{ alimentacion.id }}</td>
+                        <td>{{ alimentacion.id_oveja }}</td>
+                        <td>{{ alimentacion.fecha }}</td>
+                        <td>{{ alimentacion.tipo_alimento }}</td>
+                        <td>{{ alimentacion.cantidad }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_alimentacion', id=alimentacion.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{{ url_for('eliminar_alimentacion', id=alimentacion.id) }}" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
-    
-    <div class="sidebar">
-    <a href="{{url_for('registrar_alimentacion')}}">registrar alimentacion</a></li>
-    <a href="{{url_for('listar_alimentacion')}}">Listar alimentacion</a></li>
-    </div>
 
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
 
-    <h1>Listar Alimentaciones</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>ID Oveja</th>
-                <th>Fecha</th>
-                <th>Tipo de Alimento</th>
-                <th>Cantidad</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for alimentacion in alimentaciones %}
-            <tr>
-                <td>{{ alimentacion.id }}</td>
-                <td>{{ alimentacion.id_oveja }}</td>
-                <td>{{ alimentacion.fecha }}</td>
-                <td>{{ alimentacion.tipo_alimento }}</td>
-                <td>{{ alimentacion.cantidad }}</td>
-                <td>
-                    <a href="{{ url_for('editar_alimentacion', id=alimentacion.id) }}"class='btn'>Editar</a>
-                    <form action="{{ url_for('eliminar_alimentacion', id=alimentacion.id) }}" method="post" style="display:inline;">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta entrada de alimentacion?');">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </body>
 </html>
