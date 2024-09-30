@@ -100,7 +100,7 @@
 
     <!-- Contenido principal -->
     <div class="container mt-3">
-        <form method="POST">
+        <form method="POST" action="{{ url_for('editar_compra', id=compra.id) }}">
             {{ form.hidden_tag() }}
             <div class="form-group">
                 <h1>Editar Compra</h1>

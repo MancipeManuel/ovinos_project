@@ -85,8 +85,14 @@ class Finanzas(db.Model):
     monto = db.Column(db.Float, nullable=False)
     fecha = db.Column(db.Date, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Nuevos campos para referencia a compra y venta
+    compra_id = db.Column(db.Integer, db.ForeignKey('compra.id'), nullable=True)
+    venta_id = db.Column(db.Integer, db.ForeignKey('venta.id'), nullable=True)
 
     user = db.relationship('User', backref='finanzas')
+    compra = db.relationship('Compra', backref='finanzas', lazy=True)
+    venta = db.relationship('Venta', backref='finanzas', lazy=True)
 
 class Venta(db.Model):
     id = db.Column(db.Integer, primary_key=True)

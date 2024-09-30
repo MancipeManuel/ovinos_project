@@ -462,9 +462,10 @@ def eliminar_alimentacion(id):
 @app.route('/registrar_venta', methods=['GET', 'POST'])
 @login_required
 def registrar_venta():
-    oveja = Oveja.query.filter_by(user_id=current_user.id).all()
-    form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in oveja]
     form = VentaForm()
+    ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
+    form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in ovejas]
+
     if form.validate_on_submit():
         nueva_venta = Venta(
             id_oveja=form.id_oveja.data,
@@ -475,13 +476,15 @@ def registrar_venta():
         )
         db.session.add(nueva_venta)
         db.session.commit()
-        # Crear una nueva transacción en Finanzas
+
+        # Crear una nueva transacción en Finanzas con referencia a la nueva venta
         nueva_finanza = Finanzas(
             tipo="Venta",
             descripcion=f'Venta de oveja {form.id_oveja.data}',
             monto=form.cantidad.data * form.precio.data,
             fecha=form.fecha.data,
-            user_id=current_user.id
+            user_id=current_user.id,
+            venta_id=nueva_venta.id  # Establecer la referencia de la venta
         )
         db.session.add(nueva_finanza)
         db.session.commit()
@@ -493,18 +496,15 @@ def registrar_venta():
 @app.route('/listar_ventas', methods=['GET'])
 @login_required
 def listar_venta():
-    # Obtiene el término de búsqueda desde la solicitud
     search_query = request.args.get('search', '')
 
-    # Filtrar las ventas según el término de búsqueda
     if search_query:
         ventas = Venta.query.filter(
             (Venta.id.like(f'%{search_query}%')) |
             (Venta.id_oveja.like(f'%{search_query}%')) |
-            (Venta.precio.like(f'%{search_query}%')) 
+            (Venta.precio.like(f'%{search_query}%'))
         ).filter_by(user_id=current_user.id).all()
     else:
-        # Si no hay término de búsqueda, muestra todas las ventas
         ventas = Venta.query.filter_by(user_id=current_user.id).all()
 
     return render_template('listar_ventas.html', ventas=ventas)
@@ -521,7 +521,8 @@ def editar_venta(id):
         venta.precio = form.precio.data
         db.session.commit()
 
-        finanza = Finanzas.query.filter_by(descripcion=f'Venta de oveja {id}', user_id=current_user.id).first_or_404()
+        # Actualizar la entrada correspondiente en Finanzas
+        finanza = Finanzas.query.filter_by(venta_id=venta.id, user_id=current_user.id).first_or_404()
         finanza.monto = form.cantidad.data * form.precio.data
         finanza.fecha = form.fecha.data
         finanza.descripcion = f'Venta de oveja {venta.id_oveja}'
@@ -532,25 +533,22 @@ def editar_venta(id):
 
     return render_template('editar_venta.html', form=form, venta=venta)
 
-
 @app.route('/eliminar_venta/<int:id>', methods=['POST'])
 @login_required
 def eliminar_venta(id):
     venta = Venta.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(venta)
     db.session.commit()
+
     # Eliminar la entrada correspondiente en Finanzas
-    finanza = Finanzas.query.filter_by(descripcion=f'Venta de oveja {id}', user_id=current_user.id).first_or_404()
+    finanza = Finanzas.query.filter_by(venta_id=venta.id, user_id=current_user.id).first_or_404()
     db.session.delete(finanza)
     db.session.commit()
+
     flash('Venta eliminada correctamente', 'success')
     return redirect(url_for('listar_venta'))
-
-
   
 #-----------------------------------------------------------------termina venta-----------------------------
-
-   
 
 #-----------------------------------------------------------------compra--------------------------------
 @app.route('/registrar_compra', methods=['GET', 'POST'])
@@ -568,13 +566,14 @@ def registrar_compra():
         )
         db.session.add(nueva_compra)
         db.session.commit()
-        # Crear una nueva transacción en Finanzas
+        # Crear una nueva transacción en Finanzas con compra_id
         nueva_finanza = Finanzas(
             tipo="Compra",
             descripcion=f'Compra de {form.descripcion.data}',
             monto=form.cantidad.data * form.precio.data,
             fecha=form.fecha.data,
-            user_id=current_user.id
+            user_id=current_user.id,
+            compra_id=nueva_compra.id  # Guardar el ID de la compra
         )
         db.session.add(nueva_finanza)
         db.session.commit()
@@ -594,34 +593,38 @@ def editar_compra(id):
     compra = Compra.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = CompraForm(obj=compra)
     if form.validate_on_submit():
+        # Actualizar compra
         compra.tipo_producto = form.tipo_producto.data
         compra.descripcion = form.descripcion.data
         compra.cantidad = form.cantidad.data
         compra.precio = form.precio.data
         compra.fecha = form.fecha.data
         db.session.commit()
-        # Actualizar la entrada correspondiente en Finanzas
-        finanza = Finanzas.query.filter_by(descripcion=f'Compra de {id}', user_id=current_user.id).first_or_404()
+        # Actualizar la entrada en Finanzas
+        finanza = Finanzas.query.filter_by(compra_id=compra.id, user_id=current_user.id).first()
+        if not finanza:
+            flash('No se encontró la entrada en Finanzas para actualizar.', 'error')
+            return redirect(url_for('listar_compra'))
         finanza.monto = form.cantidad.data * form.precio.data
         finanza.fecha = form.fecha.data
-        finanza.descripcion = f'Compra de {compra.descripcion}'
+        finanza.descripcion = f'Compra de {form.descripcion.data}'  # Puedes ajustar esto si es necesario
         db.session.commit()
-        flash('compra editada!', 'success')
+        flash('Compra editada!', 'success')
         return redirect(url_for('listar_compra'))
-    return render_template('editar_compra.html', form=form)
+    return render_template('editar_compra.html', form=form, compra=compra)
 
 @app.route('/eliminar_compra/<int:id>', methods=['POST'])
 @login_required
 def eliminar_compra(id):
     compra = Compra.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    finanza = Finanzas.query.filter_by(descripcion=f'Compra de {compra.descripcion}', user_id=current_user.id).first()
+    finanza = Finanzas.query.filter_by(compra_id=compra.id, user_id=current_user.id).first() 
     if finanza:
         db.session.delete(finanza)
     # Eliminar la compra
     db.session.delete(compra)
     db.session.commit()
-    flash('compra eliminada !', 'success')
-    return redirect(url_for('compra'))
+    flash('Compra eliminada!', 'success')
+    return redirect(url_for('listar_compra'))
 #--------------------------------------------------finaliza compra---------------------------------------
 
 #-----------------------------------------------------finanzas-------------------------------------

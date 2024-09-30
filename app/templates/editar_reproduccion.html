@@ -5,93 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Reproducción</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-   
-<script>
-    // Función para calcular la fecha de parto
-    function calcularFechaParto() {
-        const fechaApareamiento = document.getElementById('fecha_apareamiento').value;
-        if (fechaApareamiento) {
-            const dateApareamiento = new Date(fechaApareamiento);
-            const periodoGestacion = 150 * 24 * 60 * 60 * 1000; // 150 días en milisegundos
-            const fechaParto = new Date(dateApareamiento.getTime() + periodoGestacion);
-            const año = fechaParto.getFullYear();
-            const mes = String(fechaParto.getMonth() + 1).padStart(2, '0');
-            const día = String(fechaParto.getDate()).padStart(2, '0');
-            document.getElementById('fecha_parto').value = `${año}-${mes}-${día}`;
-            
-            // Mostrar mensaje después de calcular la fecha de parto
-            enviarNotificacion('La fecha de parto estimada es ' + `${año}-${mes}-${día}`);
-        } else {
-            document.getElementById('fecha_parto').value = '';
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Función para calcular la fecha de parto
+        function calcularFechaParto() {
+            const fechaApareamiento = document.getElementById('fecha_apareamiento').value;
+            if (fechaApareamiento) {
+                const dateApareamiento = new Date(fechaApareamiento);
+                const periodoGestacion = 150 * 24 * 60 * 60 * 1000; // 150 días en milisegundos
+                const fechaParto = new Date(dateApareamiento.getTime() + periodoGestacion);
+                const año = fechaParto.getFullYear();
+                const mes = String(fechaParto.getMonth() + 1).padStart(2, '0');
+                const día = String(fechaParto.getDate()).padStart(2, '0');
+                document.getElementById('fecha_parto').value = `${año}-${mes}-${día}`;
+                // Mostrar mensaje después de calcular la fecha de parto
+                alert('La fecha de parto estimada es ' + `${año}-${mes}-${día}`);
+            } else {
+                document.getElementById('fecha_parto').value = '';
+            }
         }
-    }
-
-</script>
-    
+    </script>
+    <style>
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 1rem;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}"> ovejas  </a>
-        <a href="{{ url_for('salud') }}">salud</a>
-        <a href="{{url_for('reproduccion')}}"> reproduccion</a>
-        <a href="{{url_for('alimentacion')}}">alimentacion</a></li>
-        <a href="{{url_for('finanzas')}}">finanzas</a></li>
-        <a href="{{url_for('venta')}}">ventas</a></li>
-        <a href="{{url_for('compra')}}">compras</a></li>
-        <a href="{{url_for('inventario')}}">inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1c5d99;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a></li>
+            </ul>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
+        </div>
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link text-white" href="{{url_for('registrar_reproduccion')}}">Registrar reproducción</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{{url_for('listar_reproduccion')}}">Listar reproducción</a></li>
+        </ul>
     </div>
-    <div class="container">
-        {% block content %}{% endblock %}
+
+    <!-- Formulario de edición -->
+    <div class="container mt-3">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <h1>Editar Reproducción</h1>
+            <div class="form-group">
+                {{ form.id_oveja.label(class_='form-label') }}
+                {{ form.id_oveja(class_='form-control') }}
+                {% for error in form.id_oveja.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.fecha_apareamiento.label(class_='form-label') }}
+                {{ form.fecha_apareamiento(class_='form-control', id='fecha_apareamiento', oninput='calcularFechaParto()') }}
+                {% for error in form.fecha_apareamiento.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.id_macho.label(class_='form-label') }}
+                {{ form.id_macho(class_='form-control') }}
+                {% for error in form.id_macho.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.fecha_parto.label(class_='form-label') }}
+                {{ form.fecha_parto(class_='form-control', id='fecha_parto', readonly=true) }}
+                {% for error in form.fecha_parto.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.num_crias.label(class_='form-label') }}
+                {{ form.num_crias(class_='form-control') }}
+                {% for error in form.num_crias.errors %}
+                    <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class_='btn btn-primary') }}
+            </div>
+        </form>
     </div>
-    <footer>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
-    <div class="sidebar">
-    <a href="{{url_for('registrar_reproduccion')}}">Registrar reproduccion</a>
-    <a href="{{url_for('listar_reproduccion')}}">Listar  reproduccion</a></li>
-    </div>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <p>
-            <h1>Editar Reproducción</h1>
-            {{ form.id_oveja.label }}<br>
-            {{ form.id_oveja(size=32) }}<br>
-            {% for error in form.id_oveja.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.fecha_apareamiento.label }}<br>
-            {{ form.fecha_apareamiento(size=32, id='fecha_apareamiento', oninput='calcularFechaParto()') }}<br>
-            {% for error in form.fecha_apareamiento.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.id_macho.label }}<br>
-            {{ form.id_macho(size=32) }}<br>
-            {% for error in form.id_macho.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.fecha_parto.label }}<br>
-            {{ form.fecha_parto(size=32, id='fecha_parto', readonly=true) }}<br>
-            {% for error in form.fecha_parto.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.num_crias.label }}<br>
-            {{ form.num_crias(size=32) }}<br>
-            {% for error in form.num_crias.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit(class_='btn') }}</p>
-    </form>
 
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
 </body>
 </html>
