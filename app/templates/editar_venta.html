@@ -5,59 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Venta</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 0.5rem;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            background-color: #1c5d99;
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}">Ovejas</a>
-        <a href="{{ url_for('salud') }}">Salud</a>
-        <a href="{{ url_for('reproduccion') }}">Reproducción</a>
-        <a href="{{ url_for('alimentacion') }}">Alimentación</a>
-        <a href="{{ url_for('finanzas') }}">Finanzas</a>
-        <a href="{{ url_for('venta') }}">Ventas</a>
-        <a href="{{ url_for('compra') }}">Compras</a>
-        <a href="{{ url_for('inventario') }}">Inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a> 
+        </div>
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_venta') }}">Listar Ventas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('registrar_venta') }}">Registrar Venta</a>
+            </li>
+        </ul>
     </div>
-    <div class="container">
-        <h1>Editar Venta</h1>
+
+    <!-- Contenido principal -->
+    <div class="container mt-3">
         <form method="POST" action="{{ url_for('editar_venta', id=venta.id) }}">
             {{ form.hidden_tag() }}
-            <p>
-                {{ form.id_oveja.label }}<br>
-                {{ form.id_oveja() }}<br>
+            <div class="form-group">
+                <h1>Editar Venta</h1>
+                <label for="id_oveja">{{ form.id_oveja.label }}</label>
+                {{ form.id_oveja(class="form-control") }}
                 {% for error in form.id_oveja.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
+                    <small class="form-text text-danger">{{ error }}</small>
                 {% endfor %}
-            </p>
-            <p>
-                {{ form.fecha.label }}<br>
-                {{ form.fecha() }}<br>
+            </div>
+            <div class="form-group">
+                <label for="fecha">{{ form.fecha.label }}</label>
+                {{ form.fecha(class="form-control") }}
                 {% for error in form.fecha.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
+                    <small class="form-text text-danger">{{ error }}</small>
                 {% endfor %}
-            </p>
-            <p>
-                {{ form.cantidad.label }}<br>
-                {{ form.cantidad() }}<br>
+            </div>
+            <div class="form-group">
+                <label for="cantidad">{{ form.cantidad.label }}</label>
+                {{ form.cantidad(class="form-control") }}
                 {% for error in form.cantidad.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
+                    <small class="form-text text-danger">{{ error }}</small>
                 {% endfor %}
-            </p>
-            <p>
-                {{ form.precio.label }}<br>
-                {{ form.precio() }}<br>
+            </div>
+            <div class="form-group">
+                <label for="precio">{{ form.precio.label }}</label>
+                {{ form.precio(class="form-control") }}
                 {% for error in form.precio.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
+                    <small class="form-text text-danger">{{ error }}</small>
                 {% endfor %}
-            </p>
-            <p>
-                {{ form.submit(class_='btn') }}
-            </p>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         </form>
     </div>
-    <footer>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
+
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
+
 </body>
 </html>

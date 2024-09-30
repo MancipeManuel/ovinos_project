@@ -2,57 +2,133 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Ventas</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .sidebar {
+            height: calc(100% - 70px);
+            width: 250px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            background-color: #1c5d99;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: 10px;
+        }
+        .navbar {
+            padding: 0.5rem 0.5rem;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            background-color: #1c5d99;
+        }
+        .navbar-nav .nav-item {
+            margin: 0 3px;
+        }
+        .navbar-nav {
+            max-width: 800px;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <div>
-            <a href="{{ url_for('logout') }}" class="btn-close">Salir</a>
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <button class="btn btn-secondary ml-2" id="toggleSidebar">☰</button>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('oveja') }}">Ovejas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('salud') }}">Salud</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reproduccion') }}">Reproducción</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('alimentacion') }}">Alimentación</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('finanzas') }}">Finanzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('venta') }}">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('compra') }}">Compras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('inventario') }}">Inventario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" method="GET" action="{{ url_for('listar_venta') }}">
+                <input class="form-control mr-sm-2" type="search" name="search" placeholder="Buscar Ventas..." aria-label="Search" value="{{ request.args.get('search', '') }}">
+                <button class="btn btn-light my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger ml-2">Salir</a>
         </div>
-        <a href="{{ url_for('index') }}">Inicio</a>
-        <a href="{{ url_for('oveja') }}">Ovejas</a>
-        <a href="{{ url_for('salud') }}">Salud</a>
-        <a href="{{ url_for('reproduccion') }}">Reproducción</a>
-        <a href="{{ url_for('alimentacion') }}">Alimentación</a>
-        <a href="{{ url_for('finanzas') }}">Finanzas</a>
-        <a href="{{ url_for('venta') }}">Ventas</a>
-        <a href="{{ url_for('compra') }}">Compras</a>
-        <a href="{{ url_for('inventario') }}">Inventario</a>
-        <a href="{{ url_for('reportes_view') }}">Generar Reportes</a>
+    </nav>
+
+    <!-- Barra lateral -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_venta') }}">Listar Ventas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('registrar_venta') }}">Registrar Venta</a>
+            </li>
+        </ul>
     </div>
-</br></br></br>
-<!-- Mostrar mensajes flash -->
-<div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flashes">
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-              {{ message }}
+
+    <!-- Contenido principal -->
+    <div class="container mt-3">
+        <!-- Mostrar mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flashes">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
             </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-</div>
+          {% endif %}
+        {% endwith %}
 
-    <div class="sidebar">
-        <a href="{{url_for('listar_venta')}}">Listar ventas</a></li>
-        <a href="{{url_for('registrar_venta')}}">registrar ventas</a></li>
-    </div>
-    <div class="container">
-        <h1>Listado de Ventas</h1>
-        <!-- Formulario de búsqueda -->
-        <form method="GET" action="{{ url_for('listar_venta') }}"class="search-bar">
-            <input type="text" name="search" placeholder="Buscar ventas..." value="{{ request.args.get('search', '') }}">
-            <button type="submit">Buscar</button>
-        </form>
+        <!-- Título -->
+        <h1 style="margin-top: 70px;">Listado de Ventas Realizadas</h1>
 
-        <table>
+        <!-- Tabla de ventas -->
+        <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>ID Venta</th>
                     <th>Fecha</th>
                     <th>ID Oveja</th>
                     <th>Precio</th>
@@ -61,26 +137,38 @@
             </thead>
             <tbody>
                 {% for venta in ventas %}
-                <tr>
-                    <td>{{ venta.id }}</td>
-                    <td>{{ venta.fecha.strftime('%Y-%m-%d') }}</td>
-                    <td>{{ venta.id_oveja }}</td>
-                    <td>{{ venta.precio }}</td>
-                    <td>
-                        <a href="{{ url_for('editar_venta', id=venta.id) }}" class='btn'>Editar</a>
-                        <form action="{{ url_for('eliminar_venta', id=venta.id) }}" method="POST" style="display:inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta venta?');">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>{{ venta.id }}</td>
+                        <td>{{ venta.fecha.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ venta.id_oveja }}</td>
+                        <td>{{ venta.precio }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_venta', id=venta.id) }}" class="btn btn-warning">Editar</a>
+                            <form action="{{ url_for('eliminar_venta', id=venta.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?');">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    
-    <footer>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
         &copy; 2024 Gestión de Ovinos
     </footer>
+
+    <script>
+        // JavaScript para alternar la barra lateral
+        document.getElementById("toggleSidebar").onclick = function() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+            var container = document.querySelector(".container");
+            container.classList.toggle("collapsed");
+        };
+    </script>
+
 </body>
 </html>

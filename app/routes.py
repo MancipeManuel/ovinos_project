@@ -462,9 +462,9 @@ def eliminar_alimentacion(id):
 @app.route('/registrar_venta', methods=['GET', 'POST'])
 @login_required
 def registrar_venta():
+    form = VentaForm()
     oveja = Oveja.query.filter_by(user_id=current_user.id).all()
     form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in oveja]
-    form = VentaForm()
     if form.validate_on_submit():
         nueva_venta = Venta(
             id_oveja=form.id_oveja.data,
