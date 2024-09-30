@@ -9,8 +9,6 @@ from app.forms import OvejaForm, ReproduccionForm, saludForm, AlimentacionForm, 
 from app.models import Oveja,Reproduccion, Salud, Alimentacion, Venta, Compra, Finanzas, User,Inventario
 
 from sqlalchemy import func
-
-
 import os
 from app.reportes import (
     generate_ovejas_report,
@@ -465,6 +463,7 @@ def registrar_venta():
     form = VentaForm()
     ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
     form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in ovejas]
+    
     if form.validate_on_submit():
         nueva_venta = Venta(
             id_oveja=form.id_oveja.data,
@@ -490,6 +489,7 @@ def registrar_venta():
 
         flash('Venta registrada exitosamente!', 'success')
         return redirect(url_for('listar_venta'))
+    
     return render_template('registrar_venta.html', form=form)
 
 @app.route('/listar_ventas', methods=['GET'])
@@ -513,6 +513,8 @@ def listar_venta():
 def editar_venta(id):
     venta = Venta.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = VentaForm(obj=venta)
+    ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
+    form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in ovejas]
     if form.validate_on_submit():
         venta.id_oveja = form.id_oveja.data
         venta.fecha = form.fecha.data
@@ -536,15 +538,14 @@ def editar_venta(id):
 @login_required
 def eliminar_venta(id):
     venta = Venta.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    db.session.delete(venta)
+    finanza = Finanzas.query.filter_by(venta_id=venta.id, user_id=current_user.id).first()
+    
+    if finanza:
+        db.session.delete(finanza)  # Eliminar la entrada de Finanzas si existe
+    
+    db.session.delete(venta)  # Eliminar la venta
     db.session.commit()
-
-    # Eliminar la entrada correspondiente en Finanzas
-    finanza = Finanzas.query.filter_by(venta_id=venta.id, user_id=current_user.id).first_or_404()
-    db.session.delete(finanza)
-    db.session.commit()
-
-    flash('Venta eliminada correctamente', 'success')
+    flash('Venta eliminada!', 'success')
     return redirect(url_for('listar_venta'))
   
 #-----------------------------------------------------------------termina venta-----------------------------
@@ -649,8 +650,8 @@ def listar_finanzas():
 @app.route('/analisis_financiero')
 @login_required
 def analisis_financiero():
-    ventas_total = db.session.query(func.sum(Venta.precio)).scalar() or 0
-    compras_total = db.session.query(func.sum(Compra.precio)).scalar() or 0
+    ventas_total = db.session.query(func.sum(Venta.precio)).filter(Venta.user_id == current_user.id).scalar() or 0
+    compras_total = db.session.query(func.sum(Compra.precio)).filter(Compra.user_id == current_user.id).scalar() or 0
     saldo_total = ventas_total - compras_total
     return render_template('analisis_financiero.html', ventas_total=ventas_total, compras_total=compras_total, saldo_total=saldo_total)
 
@@ -660,14 +661,13 @@ def informe_mensual():
     # Consultar el total de ventas por mes
     ventas_por_mes = db.session.query(
         db.func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
-        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Venta').label('total_ventas')
-    ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
+        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Venta', Finanzas.user_id == current_user.id).label('total_ventas')
+    ).filter(Finanzas.user_id == current_user.id).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
     # Consultar el total de compras por mes
     compras_por_mes = db.session.query(
         db.func.strftime('%Y-%m', Finanzas.fecha).label('mes'),
-        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Compra').label('total_compras')
-    ).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
-
+        db.func.sum(Finanzas.monto).filter(Finanzas.tipo == 'Compra', Finanzas.user_id == current_user.id).label('total_compras')
+    ).filter(Finanzas.user_id == current_user.id).group_by(db.func.strftime('%Y-%m', Finanzas.fecha)).all()
     return render_template('informe_mensual.html', ventas_por_mes=ventas_por_mes, compras_por_mes=compras_por_mes)
 #-----------------------------------------------------------------------------inventario---------------------
 @app.route('/listar_inventario', methods=['GET'])
