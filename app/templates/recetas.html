@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Catálogo de Ovejas</title>
-    <meta name="description" content="Catálogo de las ovejas disponibles en la finca.">
+    <title>Recetas Alternativas</title>
+    <meta name="description" content="Catálogo de recetas para las ovejas disponibles en la finca.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
@@ -15,11 +15,16 @@
             padding: 0;
             text-align: center;
         }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+        }
         .catalogo {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 30px;
         }
         .oveja {
             background-color: #fff;
@@ -32,12 +37,11 @@
             text-align: center;
         }
         .oveja img {
-            width: 100%; /* Mantiene el ancho del contenedor */
-            max-width: 200px; /* Reduce el tamaño máximo de la imagen */
-            height: auto; /* Mantiene la proporción de la imagen */
-            border-radius: 10px; /* Mantiene los bordes redondeados */
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
         }
-        
         .oveja h2 {
             font-size: 20px;
             margin: 10px 0;
@@ -47,66 +51,61 @@
             color: #555;
         }
         a.boton {
-            display: inline-block; /* Hace que el enlace se comporte como un botón en línea */
-            font-size: 16px; /* Tamaño del texto */
-            text-decoration: none; /* Elimina el subrayado del enlace */
-            color: #fff; /* Color del texto del botón */
-            background-color: #007bff; /* Color de fondo del botón */
-            padding: 10px 20px; /* Espaciado interno del botón */
-            border-radius: 5px; /* Bordes redondeados del botón */
-            border: 1px solid #007bff; /* Borde del botón que coincide con el color de fondo */
-            transition: background-color 0.3s, border-color 0.3s; /* Transición suave para cambios de color */
+            display: inline-block;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #007bff;
+            transition: background-color 0.3s, border-color 0.3s;
+            margin-top: 20px;
         }
-        
         a.boton:hover {
-            background-color: #0056b3; /* Color de fondo al pasar el ratón */
-            border-color: #0056b3; /* Color del borde al pasar el ratón */
+            background-color: #0056b3;
+            border-color: #0056b3;
         }
         footer {
-            background-color: #f8f9fa; /* Color de fondo del pie de página */
-            padding: 10px 0; /* Espaciado interno en la parte superior e inferior */
-            text-align: center; /* Centra el texto del pie de página */
-            border-top: 1px solid #ddd; /* Línea delgada en la parte superior del pie de página */
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            text-align: center;
+            border-top: 1px solid #ddd;
         }
-        
         footer p {
-            font-size: 12px; /* Tamaño de fuente más pequeño */
-            color: #777; /* Color del texto más tenue */
-            margin: 0; /* Elimina el margen por defecto */
+            font-size: 12px;
+            color: #777;
+            margin: 0;
         }
-        
-        
     </style>
 </head>
 <body>
     <header>
-        <h1>Recetas Alternaativas</h1>
-        <p>usar estas recetas bajo autorizacion de un veterinario experto</p>
+        <h1>Recetas Alternativas</h1>
+        <p>Usar estas recetas bajo autorización de un veterinario experto.</p>
     </header>
 
     <div class="catalogo">
-        <!-- Ejemplo de una tarjeta de oveja -->
         <div class="oveja">
-            <img src="{{ url_for('static', filename='img/encilado1.jpeg') }}" alt="Oveja Suffolk">
-            <h2> Ración Básica de Forraje y Granos</h2>
-            <p>La Ración Básica de Forraje y Granos es una mezcla formulada para proporcionar una dieta equilibrada a las ovejas, combinando fibra, energía y proteínas. Esta ración es ideal para mantener la salud general de las ovejas y asegurar que reciban los nutrientes necesarios para su crecimiento, reproducción y producción de lana.</p>
+            <img src="{{ url_for('static', filename='img/encilado1.jpeg') }}" alt="Ración Básica de Forraje y Granos">
+            <h2>Ración Básica de Forraje y Granos</h2>
+            <p>La Ración Básica de Forraje y Granos es una mezcla formulada para proporcionar una dieta equilibrada a las ovejas, combinando fibra, energía y proteínas.</p>
         </div>
 
         <div class="oveja">
-            <img src="{{ url_for('static', filename='img/encilado2.jpeg') }}" alt="Oveja Suffolk">
+            <img src="{{ url_for('static', filename='img/encilado2.jpeg') }}" alt="Ración de Vegetales y Frutas">
             <h2>Ración de Vegetales y Frutas</h2>
-            <p>La Ración de Vegetales y Frutas es una dieta alternativa para ovejas que incorpora una variedad de vegetales y frutas frescas, complementada con heno. Este tipo de ración se utiliza para proporcionar una fuente natural de vitaminas, minerales y fibra, además de ofrecer variedad en la dieta de las ovejas.</p>
+            <p>Esta dieta incorpora una variedad de vegetales y frutas frescas, complementada con heno.</p>
         </div>
 
         <div class="oveja">
-            <img src="{{ url_for('static', filename='img/encilado3.jpeg') }}" alt="Oveja Suffolk">
+            <img src="{{ url_for('static', filename='img/encilado3.jpeg') }}" alt="Ración de Pellet y Forraje">
             <h2>Ración de Pellet y Forraje</h2>
-            <p>La Ración de Pellet y Forraje es una dieta formulada para proporcionar una nutrición balanceada a las ovejas mediante una combinación de pellets concentrados y forraje. Esta ración está diseñada para ofrecer una mezcla completa de nutrientes, incluyendo proteínas, carbohidratos, fibra, vitaminas y minerales, de manera que cubra las necesidades dietéticas de las ovejas de forma eficiente.</p>
+            <p>Esta dieta proporciona una nutrición balanceada mediante una combinación de pellets concentrados y forraje.</p>
         </div>
-
-        <!-- Puedes añadir más ovejas aquí -->
     </div>
-        <a href="{{ url_for('index') }}" class="boton">volver al Inicio</a>
+    
+    <a href="{{ url_for('index') }}" class="boton">Volver al Inicio</a>
 
     <footer>
         <p>&copy; 2024 Gestión de Ovinos</p>

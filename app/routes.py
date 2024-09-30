@@ -465,7 +465,6 @@ def registrar_venta():
     form = VentaForm()
     ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
     form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in ovejas]
-
     if form.validate_on_submit():
         nueva_venta = Venta(
             id_oveja=form.id_oveja.data,

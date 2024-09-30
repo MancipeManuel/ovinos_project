@@ -6,110 +6,81 @@
     <title>Catálogo de Ovejas</title>
     <meta name="description" content="Catálogo de las ovejas disponibles en la finca.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Incluye Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
             text-align: center;
         }
         .catalogo {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .oveja {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            margin: 10px;
-            width: 300px;
-            padding: 20px;
-            text-align: center;
+            margin-top: 30px;
         }
         .oveja img {
-            width: 100%; /* Mantiene el ancho del contenedor */
-            max-width: 200px; /* Reduce el tamaño máximo de la imagen */
-            height: auto; /* Mantiene la proporción de la imagen */
-            border-radius: 10px; /* Mantiene los bordes redondeados */
-        }
-        
-        .oveja h2 {
-            font-size: 20px;
-            margin: 10px 0;
-        }
-        .oveja p {
-            font-size: 14px;
-            color: #555;
-        }
-        a.boton {
-            display: inline-block; /* Hace que el enlace se comporte como un botón en línea */
-            font-size: 16px; /* Tamaño del texto */
-            text-decoration: none; /* Elimina el subrayado del enlace */
-            color: #fff; /* Color del texto del botón */
-            background-color: #007bff; /* Color de fondo del botón */
-            padding: 10px 20px; /* Espaciado interno del botón */
-            border-radius: 5px; /* Bordes redondeados del botón */
-            border: 1px solid #007bff; /* Borde del botón que coincide con el color de fondo */
-            transition: background-color 0.3s, border-color 0.3s; /* Transición suave para cambios de color */
-        }
-        
-        a.boton:hover {
-            background-color: #0056b3; /* Color de fondo al pasar el ratón */
-            border-color: #0056b3; /* Color del borde al pasar el ratón */
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
         }
         footer {
-            background-color: #f8f9fa; /* Color de fondo del pie de página */
-            padding: 10px 0; /* Espaciado interno en la parte superior e inferior */
-            text-align: center; /* Centra el texto del pie de página */
-            border-top: 1px solid #ddd; /* Línea delgada en la parte superior del pie de página */
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
         }
-        
-        footer p {
-            font-size: 12px; /* Tamaño de fuente más pequeño */
-            color: #777; /* Color del texto más tenue */
-            margin: 0; /* Elimina el margen por defecto */
-        }
-        
-        
     </style>
 </head>
 <body>
-    <header>
+    <header class="bg-primary text-white py-4">
         <h1>Catálogo de Ovejas</h1>
         <p>Explora nuestras ovejas disponibles en la finca</p>
     </header>
 
-    <div class="catalogo">
-        <!-- Ejemplo de una tarjeta de oveja -->
-        <div class="oveja">
-            <img src="{{ url_for('static', filename='img/sheep5.jpeg') }}" alt="Oveja Suffolk">
-            <h2>Oveja Merina</h2>
-            <p>Oveja Merina de alta calidad, conocida por su lana fina y su adaptabilidad a diferentes climas.</p>
-        </div>
+    <div class="container catalogo">
+        <div class="row">
+            <!-- Ejemplo de una tarjeta de oveja -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <img src="{{ url_for('static', filename='img/sheep5.jpeg') }}" class="card-img-top" alt="Oveja Merina">
+                    <div class="card-body">
+                        <h5 class="card-title">Oveja Merina</h5>
+                        <p class="card-text">Oveja Merina de alta calidad, conocida por su lana fina y su adaptabilidad a diferentes climas.</p>
+                    </div>
+                </div>
+            </div>
 
-        <div class="oveja">
-            <img src="{{ url_for('static', filename='img/sheep2.jpeg') }}" alt="Oveja Suffolk">
-            <h2>Oveja Suffolk</h2>
-            <p>Oveja Suffolk, famosa por su carne de alta calidad y su resistencia en climas fríos.</p>
-        </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <img src="{{ url_for('static', filename='img/sheep2.jpeg') }}" class="card-img-top" alt="Oveja Suffolk">
+                    <div class="card-body">
+                        <h5 class="card-title">Oveja Suffolk</h5>
+                        <p class="card-text">Oveja Suffolk, famosa por su carne de alta calidad y su resistencia en climas fríos.</p>
+                    </div>
+                </div>
+            </div>
 
-        <div class="oveja">
-            <img src="{{ url_for('static', filename='img/sheep4.jpeg') }}" alt="Oveja Suffolk">
-            <h2>Oveja Dorper</h2>
-            <p>Oveja Dorper, una raza robusta con una alta tasa de crecimiento y excelente calidad de carne.</p>
-        </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <img src="{{ url_for('static', filename='img/sheep4.jpeg') }}" class="card-img-top" alt="Oveja Dorper">
+                    <div class="card-body">
+                        <h5 class="card-title">Oveja Dorper</h5>
+                        <p class="card-text">Oveja Dorper, una raza robusta con una alta tasa de crecimiento y excelente calidad de carne.</p>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Puedes añadir más ovejas aquí -->
+            <!-- Agrega más ovejas aquí utilizando el mismo patrón de tarjeta -->
+        </div>
     </div>
-        <a href="{{ url_for('index') }}" class="boton">volver al Inicio</a>
 
-    <footer>
+    <div class="my-4">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Volver al Inicio</a>
+    </div>
+
+    <footer class="bg-light text-muted py-3">
         <p>&copy; 2024 Gestión de Ovinos</p>
     </footer>
+
+    <!-- Incluye Bootstrap JS y dependencias -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

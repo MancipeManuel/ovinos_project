@@ -95,16 +95,19 @@
 
     <!-- Contenido principal -->
     <div class="container mt-4">
-        <div class="content-section">
-            <p>Ver el catálogo actualizado</p>
-            <a class="btn btn-primary" href="{{ url_for('catalogo') }}">Ir al catálogo</a>
+        <div class="content-section mb-4">
+            <p style="color: #000000;">Ver el catálogo actualizado</p>
+            <a class="btn btn-outline-primary" href="{{ url_for('catalogo') }}">Ir al catálogo</a>
         </div>
-        <div class="content-section">
-            <p>Recetas alternativas</p>
-            <a class="btn btn-primary" href="{{ url_for('recetas') }}">Ver recetas</a>
+        <div class="content-section mb-4">
+            <p style="color: #000000;">Recetas alternativas</p>
+            <a class="btn btn-outline-primary" href="{{ url_for('recetas') }}">Ver recetas</a>
         </div>
         {% block content %}{% endblock %}
     </div>
+    
+    
+    
 
     <!-- Footer -->
     <footer>
