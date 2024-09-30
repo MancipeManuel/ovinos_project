@@ -57,7 +57,7 @@ class ReproduccionForm(FlaskForm):
     submit = SubmitField('Guardar')
     
 class saludForm(FlaskForm):
-    id_oveja = IntegerField('ID Oveja', validators=[DataRequired()])
+    id_oveja = SelectField('ID Oveja', choices=[], coerce=int, validators=[DataRequired()])
     fecha = DateField('Fecha del tratamiento ', format='%Y-%m-%d', validators=[DataRequired()])
     tipo_tratamiento = StringField('Tipo Tratamiento',validators= [DataRequired()])
     detalle = StringField('Detalle del Tratamiento ', validators=[Optional()])

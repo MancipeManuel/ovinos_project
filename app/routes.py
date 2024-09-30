@@ -339,6 +339,8 @@ def eliminar_reproduccion(id):
 @login_required
 def registrar_salud():
     form = saludForm()
+    ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
+    form.id_oveja.choices =[(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in ovejas]
     if form.validate_on_submit():
         nuevo_registro = Salud(
             id_oveja=form.id_oveja.data,
@@ -465,6 +467,7 @@ def registrar_venta():
     form = VentaForm()
     ovejas = Oveja.query.filter_by(user_id=current_user.id).all()
     form.id_oveja.choices = [(0, 'Ninguno')] + [(oveja.id, f'Oveja {oveja.nombre} (ID: {oveja.id})') for oveja in ovejas]
+
     if form.validate_on_submit():
         nueva_venta = Venta(
             id_oveja=form.id_oveja.data,

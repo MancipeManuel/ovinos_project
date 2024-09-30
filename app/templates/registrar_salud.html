@@ -91,20 +91,20 @@
         </div>
     </nav>
 
-    <div class="container">
-        {% block content %}{% endblock %}
+      <!-- Barra lateral -->
+      <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('registrar_salud') }}">Registrar Salud</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('listar_salud') }}">Listar Salud</a>
+            </li>
+        </ul>
     </div>
-    <footer>
-        &copy; 2024 Gestión de Ovinos
-    </footer>
+<div class="container">
     
-
-    <div class="sidebar">
-        <a href="{{url_for('registrar_salud')}}">Registrar Salud</a></li>
-        <a href="{{url_for('listar_salud')}}">Listar Salud</a></li>
-    </div>
-
-   
+</div>
 </body>
 </html>
     <form method="POST" action="{{ url_for('registrar_salud') }}">
@@ -140,8 +140,22 @@
             {% endfor %}
         </div>
         <div>
-            {{ form.submit(class_='btn') }}
+            {{ form.submit(class_='btn btn-primary') }}
         </div>
     </form>
+<!-- Pie de página -->
+<footer class="text-center mt-4">
+    &copy; 2024 Gestión de Ovinos
+</footer>
+
+<script>
+    // JavaScript para alternar la barra lateral
+    document.getElementById("toggleSidebar").onclick = function() {
+        var sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("collapsed");
+        var container = document.querySelector(".container");
+        container.classList.toggle("collapsed");
+    };
+</script>
 </body>
 </html>
